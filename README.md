@@ -18,7 +18,7 @@ Thank You
 Alpha Version 1.0
 
 ### License
-(C) 2015 - 2016
+(C) 2013 - 2016
 under GNU General Public License Version 2.
 
 ### Example
