@@ -7,11 +7,14 @@ Most used classes and functions
 
 LightWeight
 
-    Let us know:
+    Let me know:
         your review.
         if you found any bug/error.
 
 Thank You
+
+### Require
+PHP Version 5.5, 5.6
 
 ### Version 
 Alpha Version 1.0
