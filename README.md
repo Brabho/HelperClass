@@ -10,7 +10,6 @@ LightWeight
     Let us know:
         your review.
         if you found any bug/error.
-        if you want to contribute. 
 
 Thank You
 
