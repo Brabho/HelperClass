@@ -5,21 +5,27 @@
  */
 
 class session {
+    /*
+     * Start Session
+     */
 
     public function start() {
-        if ( (session_id() == '') || 
-        	 (session_status() == PHP_SESSION_NONE) || 
-        	 (session_status() !== PHP_SESSION_ACTIVE) ) {
+        if ((session_id() == '') ||
+                (session_status() == PHP_SESSION_NONE) ||
+                (session_status() !== PHP_SESSION_ACTIVE)) {
 
             if (!headers_sent()) {
                 session_start();
                 session_regenerate_id(true);
-                
             } else {
                 return false;
             }
         }
     }
+
+    /*
+     * Set Session
+     */
 
     public function set($key, $value) {
         $this->start();
@@ -27,16 +33,28 @@ class session {
         unset($key, $value);
     }
 
+    /*
+     * Get Session
+     */
+
     public function get($name) {
         $this->start();
         return (array_key_exists($name, $_SESSION) && $_SESSION[$name] !== null && !empty($_SESSION[$name])) ? $_SESSION[$name] : false;
     }
+
+    /*
+     * Remove Session
+     */
 
     public function remove($key) {
         $this->start();
         $_SESSION[$key] = NULL;
         unset($_SESSION[$key], $key);
     }
+
+    /*
+     * Remove All Session
+     */
 
     public function removeAll() {
         $this->start();
@@ -47,6 +65,11 @@ class session {
         }
         session_unset();
     }
+
+    /*
+     * Remove All Session
+     * Session Destory 
+     */
 
     public function destroy() {
         $this->start();

@@ -5,6 +5,9 @@
  */
 
 class zip {
+    /*
+     * Add to Zip
+     */
 
     public function add($source, $destiny) {
         if (!extension_loaded('zip') || !file_exists($source)) {
@@ -36,6 +39,10 @@ class zip {
         }
         return $zip->close();
     }
+
+    /*
+     * Extract Zip
+     */
 
     public function extract($source, $destiny) {
         $zip = new ZipArchive;

@@ -5,6 +5,9 @@
  */
 
 class dom_doc {
+    /*
+     * Load DOM Document
+     */
 
     public function load($html) {
         $html = file_get_contents($html);
@@ -22,6 +25,10 @@ class dom_doc {
         }
         unset($html, $dom);
     }
+
+    /*
+     * Get All Meta Tags
+     */
 
     public function metaTags($html) {
         $metaTags = get_meta_tags($html);
@@ -41,6 +48,10 @@ class dom_doc {
         unset($html, $load, $node, $metaTags, $title);
     }
 
+    /*
+     * Get FavIcon
+     */
+
     public function favicon($html) {
         $matches = '';
         if ($load = $this->load($html)) {
@@ -58,6 +69,10 @@ class dom_doc {
         }
         unset($html, $matches, $load, $node);
     }
+
+    /*
+     * Get `a` Tag Link
+     */
 
     public function hrefs($html, $num = 'all') {
         $matches = array();
@@ -80,6 +95,10 @@ class dom_doc {
         unset($html, $num, $load, $matches, $node);
     }
 
+    /*
+     * Get Script Tag Link
+     */
+
     public function scripts($html, $num = 'all') {
         $matches = array();
         if ($load = $this->load($html)) {
@@ -100,6 +119,10 @@ class dom_doc {
         }
         unset($html, $num, $load, $matches, $node);
     }
+
+    /*
+     * Get Css Link
+     */
 
     public function styles($html, $num = 'all') {
         $matches = '';

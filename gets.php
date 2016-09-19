@@ -1,6 +1,9 @@
 <?php
 
 class gets {
+    /*
+     * Get Mime Type
+     */
 
     public function mime($file) {
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
@@ -8,6 +11,10 @@ class gets {
         finfo_close($finfo);
         unset($file, $finfo);
     }
+
+    /*
+     * Uri Information
+     */
 
     public function uri_info($link) {
         $allarr = parse_url($link);
@@ -18,30 +25,34 @@ class gets {
         return $allarr;
         unset($link, $allarr, $domain);
     }
-    
+
+    /*
+     * Get Email, Image, Link By Regex
+     */
+
     public function byPrtn($subject, $count = 'all', $pattern = null, $by = 'email') {
-        if(!isset($pattern)) {
+        if (!isset($pattern)) {
             switch ($by) {
                 case 'email':
-                $pattern = '/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/i';
-                break;
-                
+                    $pattern = '/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/i';
+                    break;
+
                 case 'img':
-                $pattern = '/<img.+src=[\'"]([^\'"]+)[\'"].*>/i';
-                break;
-                
+                    $pattern = '/<img.+src=[\'"]([^\'"]+)[\'"].*>/i';
+                    break;
+
                 case 'link':
-                $pattern = '/(http|https|ftp|ftps)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/i';
-                break;              
+                    $pattern = '/(http|https|ftp|ftps)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/i';
+                    break;
             }
         }
 
         preg_match_all($pattern, $subject, $matches);
-        if(array_key_exists(0, $matches)) {
-            if($count === 'all') {
+        if (array_key_exists(0, $matches)) {
+            if ($count === 'all') {
                 return $matches[0];
             } else {
-                if(array_key_exists($count, $matches[0])) {
+                if (array_key_exists($count, $matches[0])) {
                     return $matches[0][$count];
                 } else {
                     return false;
@@ -52,6 +63,10 @@ class gets {
         }
         unset($subject, $count, $pattern, $by);
     }
+
+    /*
+     * Time Ago Function
+     */
 
     public function timeAgo($time) {
         $periods = array('second', 'minute', 'hour', 'day', 'week', 'month', 'year', 'decade');
@@ -69,6 +84,10 @@ class gets {
         unset($time, $periods, $lengths, $now, $difference, $j);
     }
 
+    /*
+     * Format Intizer Length
+     */
+
     public function lengthK($val) {
         if ($val > 1000) {
             $val = round(($val / 1000), 2);
@@ -77,8 +96,12 @@ class gets {
         return $val;
         unset($val);
     }
-    
-    public function formatBits ($the_size) {
+
+    /*
+     * Format Size
+     */
+
+    public function formatBits($the_size) {
         switch ($the_size) {
             case ($the_size < 1024):
                 return $the_size . 'B';

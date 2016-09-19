@@ -6,6 +6,9 @@
  */
 
 class minify {
+    /*
+     * HTML
+     */
 
     public static function html($html) {
         $search = [
@@ -21,6 +24,10 @@ class minify {
         return $html;
         unset($html);
     }
+
+    /*
+     * CSS
+     */
 
     public function css($file) {
         $buffer = file_get_contents($file);
@@ -40,6 +47,10 @@ class minify {
         unset($buffer);
     }
 
+    /*
+     * JavaScript
+     */
+
     public function js($file) {
         $buffer = file_get_contents($file);
 
@@ -55,6 +66,10 @@ class minify {
         unset($buffer);
     }
 
+    /*
+     * JSON
+     */
+
     public function json($json) {
         $buffer = '';
         $search = ['/[\p{Z}\s]{2,}/u'];
@@ -65,6 +80,10 @@ class minify {
         return $buffer;
         unset($buffer);
     }
+
+    /*
+     * XML
+     */
 
     public function xml($xml) {
         $buffer = '';

@@ -5,38 +5,38 @@
  */
 
 class str {
-
     /*
      * HTML Encode
      */
-    public function htm_enc($content, $arr = array()) {        
-        if(!array_key_exists('strip', $arr)) {
+
+    public function htm_enc($content, $arr = array()) {
+        if (!array_key_exists('strip', $arr)) {
             $arr['strip'] = false;
         }
-        if(!array_key_exists('allow', $arr)) {
+        if (!array_key_exists('allow', $arr)) {
             $arr['allow'] = '';
         }
-        if(!array_key_exists('encode', $arr)) {
+        if (!array_key_exists('encode', $arr)) {
             $arr['encode'] = 'specialchars';
         }
-        
-        if($arr['strip'] === true) {
+
+        if ($arr['strip'] === true) {
             $content = strip_tags($content, $arr['allow']);
         }
-        
+
         switch ($arr['encode']) {
             case 'specialchars':
-            $content = htmlspecialchars($content, ENT_QUOTES, 'UTF-8');
-            break;
-            
+                $content = htmlspecialchars($content, ENT_QUOTES, 'UTF-8');
+                break;
+
             case 'entities':
-            $content = htmlentities($content, ENT_QUOTES, 'UTF-8');
-            break;
-        }        
+                $content = htmlentities($content, ENT_QUOTES, 'UTF-8');
+                break;
+        }
         unset($arr);
         return $content;
     }
-    
+
     /*
      * Rename File name
      */
@@ -50,14 +50,15 @@ class str {
     /*
      * Mod Trim
      */
-    public function trims($content, $delmi = " \t\n\r\0\x0B", $white = false) {        
+
+    public function trims($content, $delmi = " \t\n\r\0\x0B", $white = false) {
         $content = trim($content, $delmi);
         $content = ltrim($content, $delmi);
         $content = rtrim($content, $delmi);
-        
-        if($white === true) {
+
+        if ($white === true) {
             $content = preg_replace('/\s+/', $space, $content);
-        }        
+        }
         unset($delmi, $white);
         return $content;
     }
@@ -77,6 +78,10 @@ class str {
         return $text;
     }
 
+    /*
+     * String to Hex
+     */
+
     public function str2hex($string) {
         $hex = '';
         for ($i = 0; $i < strlen($string); $i++) {
@@ -87,6 +92,10 @@ class str {
         return strToUpper($hex);
         unset($string, $hex, $i, $ord, $hexCode);
     }
+
+    /*
+     * Hex to String
+     */
 
     public function hex2str($hex) {
         $string = '';

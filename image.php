@@ -6,79 +6,79 @@
 
 class image {
 
-	private $status;
-	private $mime;
+    private $status;
+    private $mime;
 
-	function __construct($arr = array()) {
+    function __construct($arr = array()) {
 
-		$this->status = [];
-		$this->mime = [
-			'image/jpeg',
-			'image/pjpeg',
-			'image/png',
-			'image/gif',
-			'image/bmp',			
-			'image/x-icon',
-			'image/tiff',
-			'image/x-tiff'
-		];
+        $this->status = [];
+        $this->mime = [
+            'image/jpeg',
+            'image/pjpeg',
+            'image/png',
+            'image/gif',
+            'image/bmp',
+            'image/x-icon',
+            'image/tiff',
+            'image/x-tiff'
+        ];
 
-		$this->status[0] = 'pass';
-	}
+        $this->status[0] = 'pass';
+    }
 
-	private function real_path($file) {
-		return preg_replace('/\\.[^.\\s]{3,4}$/', '', $file);
-	}
+    private function real_path($file) {
+        return preg_replace('/\\.[^.\\s]{3,4}$/', '', $file);
+    }
 
-	private function real_name($file) {
-		return pathinfo($file, PATHINFO_FILENAME);
-	}
+    private function real_name($file) {
+        return pathinfo($file, PATHINFO_FILENAME);
+    }
 
-	/*
-	 * Checking File
-	 */
-	public function check ($file, $mime = null) {
-		
-		if(isset($mime) && is_array($mime)) {
-			$this->mime = $mime;
-		}
-		
-		if(file_exists($file)) {
-			
-			if($this->status['details'] 	= getimagesize($file)) {
-				$this->status['file']		= $file;
-				$this->status['saved']		= $file;
-				$this->status['real_name'] 	= basename($file);
-	
-			} else {
-				$this->status[0] = 'fail';
-				$this->status['reason'] = 'not_img';
-			}
-	
-			if(!in_array($this->status['details']['mime'], $this->mime)) {
-				$this->status[0] = 'fail';
-				$this->status['reason'] = 'wrong_mime';
-			}
-			
-		} else {
-			$this->status[0] = 'fail';
-			$this->status['reason'] = 'not_found';
-		}		
-		return $this->status;
-	}
+    /*
+     * Checking File
+     */
 
-	/*
-	 * Crop Image
-	 */
-	public function crop($file, $arr = array()) {
-		$this->check($file);
-        if(!is_numeric($arr['width']) || !is_numeric($arr['height'])) {
-            $this->status[0] 		= 'fail';
+    public function check($file, $mime = null) {
+
+        if (isset($mime) && is_array($mime)) {
+            $this->mime = $mime;
+        }
+
+        if (file_exists($file)) {
+
+            if ($this->status['details'] = getimagesize($file)) {
+                $this->status['file'] = $file;
+                $this->status['saved'] = $file;
+                $this->status['real_name'] = basename($file);
+            } else {
+                $this->status[0] = 'fail';
+                $this->status['reason'] = 'not_img';
+            }
+
+            if (!in_array($this->status['details']['mime'], $this->mime)) {
+                $this->status[0] = 'fail';
+                $this->status['reason'] = 'wrong_mime';
+            }
+        } else {
+            $this->status[0] = 'fail';
+            $this->status['reason'] = 'not_found';
+        }
+        return $this->status;
+    }
+
+    /*
+     * Crop Image
+     */
+
+    public function crop($file, $arr = array()) {
+        $this->check($file);
+        if (!is_numeric($arr['width']) || !is_numeric($arr['height'])) {
+            $this->status[0] = 'fail';
             $this->status['reason'] = 'wrong_size';
         }
-		if($this->status[0] !== 'fail') {
+        if ($this->status[0] !== 'fail') {
 
-			switch ($this->status['details']['mime']) {
+            switch ($this->status['details']['mime']) {
                 case 'image/jpeg':
                     $image = imagecreatefromjpeg($file);
                     $this->status['saved'] = $this->real_path($file) . '.jpeg';
@@ -98,61 +98,62 @@ class image {
                     break;
 
                 default:
-                	$this->status[0] = 'fail';
-					$this->status['reason'] = 'not_support';
-                	break;
+                    $this->status[0] = 'fail';
+                    $this->status['reason'] = 'not_support';
+                    break;
             }
 
-            if($this->status[0] !== 'fail') {
+            if ($this->status[0] !== 'fail') {
 
-            	$width = imagesx($image);
-	            $height = imagesy($image);
+                $width = imagesx($image);
+                $height = imagesy($image);
 
-	            $original_aspect = $width / $height;
-	            $thumb_aspect = $arr['width'] / $arr['height'];
+                $original_aspect = $width / $height;
+                $thumb_aspect = $arr['width'] / $arr['height'];
 
-	            if ($original_aspect >= $thumb_aspect) {
-	                $new_height = $arr['height'];
-	                $new_width = $width / ($height / $arr['height']);
-	            } else {
-	                $new_width = $arr['width'];
-	                $new_height = $height / ($width / $arr['width']);
-	            }
+                if ($original_aspect >= $thumb_aspect) {
+                    $new_height = $arr['height'];
+                    $new_width = $width / ($height / $arr['height']);
+                } else {
+                    $new_width = $arr['width'];
+                    $new_height = $height / ($width / $arr['width']);
+                }
 
-	            $thumb = imagecreatetruecolor($arr['width'], $arr['height']);
-	            imagecopyresampled($thumb, $image, 0 - ($new_width - $arr['width']) / 2, 0 - ($new_height - $arr['height']) / 2, 0, 0, $new_width, $new_height, $width, $height);
+                $thumb = imagecreatetruecolor($arr['width'], $arr['height']);
+                imagecopyresampled($thumb, $image, 0 - ($new_width - $arr['width']) / 2, 0 - ($new_height - $arr['height']) / 2, 0, 0, $new_width, $new_height, $width, $height);
 
-	            switch ($this->status['details']['mime']) {
-	                case 'image/jpeg':
-	                    imagejpeg($thumb, $this->status['saved']);
-	                    break;
+                switch ($this->status['details']['mime']) {
+                    case 'image/jpeg':
+                        imagejpeg($thumb, $this->status['saved']);
+                        break;
 
-	                case 'image/png':
-	                    imagepng($thumb, $this->status['saved']);
-	                    break;
+                    case 'image/png':
+                        imagepng($thumb, $this->status['saved']);
+                        break;
 
-	                case 'image/gif':
-	                    imagegif($thumb, $this->status['saved']);
-	                    break;
-	            }
+                    case 'image/gif':
+                        imagegif($thumb, $this->status['saved']);
+                        break;
+                }
             }
-		}
-		return $this->status;
-		unset($arr, $image, $width, $height, $original_aspect, $thumb_aspect, $new_height, $new_width, $thumb);
-	}
-	
-	/*
-	 * Convert Image
-	 */
-	public function convert($file, $to) {
-		$this->check($file); 
-		if($this->status[0] !== 'fail') {
+        }
+        return $this->status;
+        unset($arr, $image, $width, $height, $original_aspect, $thumb_aspect, $new_height, $new_width, $thumb);
+    }
 
-			switch ($to) {
+    /*
+     * Convert Image
+     */
 
-				/*
-				 * convert to jpeg
-				 */
+    public function convert($file, $to) {
+        $this->check($file);
+        if ($this->status[0] !== 'fail') {
+
+            switch ($to) {
+
+                /*
+                 * convert to jpeg
+                 */
                 case ($this->status['details']['mime'] === 'image/jpeg' && $to === 'jpeg'):
                     $image_obj = imagecreatefromjpeg($this->status['file']);
                     imagejpeg($image_obj, $this->real_path($file) . '.jpeg');
@@ -251,55 +252,55 @@ class image {
                  * Not Support
                  */
                 default:
-                	$this->status[0] = 'fail';
-					$this->status['reason'] = 'not_support';
-					break;
-			}
-		}
-		return $this->status;
-		unset($arr, $image_obj, $output, $white);
-	}
+                    $this->status[0] = 'fail';
+                    $this->status['reason'] = 'not_support';
+                    break;
+            }
+        }
+        return $this->status;
+        unset($arr, $image_obj, $output, $white);
+    }
 
-	/*
-	 * Check, Crop, Convert & Save 
-	 * All in One
-	 */
-	public function save($arr = array()) {
-				
-		if(!array_key_exists('mime', $arr) && is_array($arr['mime'])) {
-			$this->mime = $arr['mime'];
-		}
-		
-		$this->check($arr['file'], $arr['mime']);
-		if($this->status[0] !== 'fail') {
-			
-			if(array_key_exists('crop', $arr) && is_array($arr['crop'])) {
-				$this->crop($this->status['saved'], $arr['crop']);
-			}
-			
-			if(array_key_exists('convert', $arr)) {
-				$this->convert($this->status['saved'], $arr['convert']);
-			}
-			
-			if(!array_key_exists('name', $arr)) {
-				$arr['name'] = $this->real_name($arr['file']);
-			}
-			
-			if(array_key_exists('save', $arr)) {
-				$arr['save'] = dirname($arr['file']);
-			}
-			
-			$new_save = $arr['save'] . '/' . $arr['name'] . $this->status['extn'];
-			rename($this->status['saved'], $new_save);
-			$this->status['saved'] = $new_save;
-			
-		}
-				
-		return $this->status;
-		unset($arr, $new_save);
-	}
+    /*
+     * Check, Crop, Convert & Save 
+     * All in One
+     */
 
-	function __destruct() {
+    public function save($arr = array()) {
+
+        if (!array_key_exists('mime', $arr) && is_array($arr['mime'])) {
+            $this->mime = $arr['mime'];
+        }
+
+        $this->check($arr['file'], $arr['mime']);
+        if ($this->status[0] !== 'fail') {
+
+            if (array_key_exists('crop', $arr) && is_array($arr['crop'])) {
+                $this->crop($this->status['saved'], $arr['crop']);
+            }
+
+            if (array_key_exists('convert', $arr)) {
+                $this->convert($this->status['saved'], $arr['convert']);
+            }
+
+            if (!array_key_exists('name', $arr)) {
+                $arr['name'] = $this->real_name($arr['file']);
+            }
+
+            if (array_key_exists('save', $arr)) {
+                $arr['save'] = dirname($arr['file']);
+            }
+
+            $new_save = $arr['save'] . '/' . $arr['name'] . $this->status['extn'];
+            rename($this->status['saved'], $new_save);
+            $this->status['saved'] = $new_save;
+        }
+
+        return $this->status;
+        unset($arr, $new_save);
+    }
+
+    function __destruct() {
         unset($this);
     }
 

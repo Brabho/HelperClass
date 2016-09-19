@@ -5,24 +5,39 @@
  */
 
 class cookie {
+    /*
+     * Set Cookie
+     */
 
     public function set($name, $value, $extime = 86400, $path = '/') {
-        setcookie($name, $value, time()+$extime, $path);
+        setcookie($name, $value, time() + $extime, $path);
         unset($name, $value, $extime, $path);
     }
+
+    /*
+     * Get Cookie
+     */
 
     public function get($name) {
         return (array_key_exists($name, $_COOKIE) && $_COOKIE[$name] !== null && !empty($_COOKIE[$name])) ? $_COOKIE[$name] : false;
     }
 
+    /*
+     * Remove Single Cookie
+     */
+
     public function remove($name, $path = '/') {
-        setcookie($name, '', time()-86400, $path);
+        setcookie($name, '', time() - 86400, $path);
         unset($name);
     }
 
+    /*
+     * Remove All Cookies
+     */
+
     public function removeAll($path = '/') {
         foreach ($_COOKIE as $cookie => $c_val) {
-            setcookie($cookie, '', time()-86400, $path);
+            setcookie($cookie, '', time() - 86400, $path);
         }
     }
 

@@ -5,6 +5,9 @@
  */
 
 class dir {
+    /*
+     * Make Directory
+     */
 
     public function mk($path) {
         $path = $path . '/';
@@ -22,6 +25,10 @@ class dir {
         }
         unset($path, $directory_path, $directories);
     }
+
+    /*
+     * Copy Directory 
+     */
 
     public function copy($src, $dest) {
         if (!file_exists($dest)) {
@@ -45,6 +52,10 @@ class dir {
         unset($src, $dest);
     }
 
+    /*
+     * Delete Directory 
+     */
+
     public function del($dir) {
         if (is_dir($dir)) {
             $objects = scandir($dir);
@@ -62,6 +73,10 @@ class dir {
         }
         unset($dir, $objects, $object);
     }
+
+    /*
+     * Directory Size 
+     */
 
     public function size($dir) {
         if (is_dir($dir)) {

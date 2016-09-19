@@ -5,6 +5,9 @@
  */
 
 class crypto {
+    /*
+     * Encrypt Value
+     */
 
     private function encrypt($val, $arr = array()) {
 
@@ -18,8 +21,12 @@ class crypto {
         $crypt = mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $key, $val . $mac, MCRYPT_MODE_CBC, $iv);
         $crypt = base64_encode($crypt) . '|' . base64_encode($iv);
         unset($val, $arr, $key, $iv, $mac);
-        return $crypt;        
+        return $crypt;
     }
+
+    /*
+     * Decrypt Value
+     */
 
     private function decrypt($val, $arr = array()) {
 
@@ -28,24 +35,28 @@ class crypto {
         $deco = base64_decode($val[0]);
         $iv = base64_decode($val[1]);
 
-        if(strlen($iv) === mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_CBC)) {
+        if (strlen($iv) === mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_CBC)) {
             $key = pack('H*', $key);
             $decry = trim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $key, $deco, MCRYPT_MODE_CBC, $iv));
             $mac = substr($decry, -64);
             $decry = substr($decry, 0, -64);
             $cmac = hash_hmac('sha256', $decry, substr(bin2hex($key), -32));
 
-            if($mac === $cmac) {
+            if ($mac === $cmac) {
                 $decry = str_rot13(unserialize($decry));
-                $decry = str_replace([$arr['p'], $arr['s']], '', $decry);                
+                $decry = str_replace([$arr['p'], $arr['s']], '', $decry);
                 unset($val, $arr, $key, $iv, $mac, $deco, $cmac);
                 return $decry;
             }
-        }        
+        }
     }
 
+    /*
+     * Main Function
+     */
+
     public function val($str, $arr = array()) {
-        switch($arr['do']) {
+        switch ($arr['do']) {
             case 'en':
                 return $this->encrypt($str, $arr);
                 break;

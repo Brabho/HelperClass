@@ -47,30 +47,7 @@ class cf {
     }
 
     /*
-     * Random Number
-     */
-
-    public function ranNum($length = 40) {
-        $num = microtime(true) + mt_rand(999999, 999999) + rand(999999, 999999);
-        $num = explode('.', $num);
-        $numb = ($num[0] + $num[0]) . ($num[1] + $num[0]) . ($num[0] + $num[1]) . ($num[1] + $num[1]) . mt_rand() . rand();
-        return substr($numb, 0, $length);
-        unset($length, $num, $numb);
-    }
-
-    /*
-     * Random String
-     */
-
-    public function ranStr($length = 40) {
-        $str = rand(999999, 999999) . microtime(true) . uniqid() . mt_rand(999999, 999999);
-        $str = hash('sha256', $str);
-        return substr($str, 0, $length);
-        unset($length, $str);
-    }
-
-    /*
-     * Work if there is no key
+     * Work if there is no key or initizer key
      */
 
     public function shuffle_arr($arr = []) {
