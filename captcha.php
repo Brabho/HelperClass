@@ -12,14 +12,20 @@ class captcha {
 
     private function create($arr = array()) {
 
+        /*
+         * Check GD 
+         */
         if (!get_extension_funcs("gd")) {
-            echo '<h2>GD not Installed</h2>';
+            echo '<h2>GD Require</h2>';
             return false;
         }
 
+        /*
+         * Creating Image
+         */
         $image = imagecreatetruecolor($arr['width'], $arr['height']);
         $c = array();
-        if ($arr['color'] == 'rand') {
+        if ($arr['color'] === 'rand') {
             $c[0] = mt_rand(0, 255);
             $c[1] = mt_rand(0, 255);
             $c[2] = mt_rand(0, 255);
@@ -31,6 +37,9 @@ class captcha {
         imagefilledrectangle($image, 0, 0, $arr['width'], $arr['height'], $bg_color);
         $pixels = (($arr['width'] * $arr['height']) / 100) + 60;
 
+        /*
+         * Making Lines and Pixel
+         */
         switch ($arr['style']) {
             case 'line':
                 $line_color = imagecolorallocate($image, 0, 0, 0);
@@ -59,6 +68,9 @@ class captcha {
                 break;
         }
 
+        /*
+         * Image Text Colour
+         */
         $tc = array(
             '0' => mt_rand(0, 255),
             '1' => mt_rand(0, 255),
@@ -66,39 +78,72 @@ class captcha {
         );
         $text_color = imagecolorallocate($image, $tc[0], $tc[1], $tc[2]);
 
-        $font = 6;
-        if ($arr['font'] != '') {
-            $font = imageloadfont($arr['font']);
-        }
+        /*
+         * Generate Image Text (Number/String)
+         */
+        switch ($arr['text_type']) {
+            case 'num':
+                for ($i = -1; $i <= 4; $i++) {
+                    $bytes = openssl_random_pseudo_bytes(4, $crypto_strong);
+                    $img_text = hexdec(bin2hex($bytes));
+                }
+                break;
 
-        $letters = '1234567890';
-        $spl_letters = str_split($letters);
-        $img_text = '';
-        for ($i = 0; $i < $arr['len']; $i++) {
-            $img_text .= $spl_letters[rand(0, 9)];
-        }
+            case 'str':
+                for ($i = -1; $i <= 4; $i++) {
+                    $bytes = openssl_random_pseudo_bytes(4, $crypto_strong);
+                    $img_text = bin2hex($bytes);
+                }
+                break;
 
-        if ($arr['the_text'] === 'str') {
-            $img_text = hash('sha256', $img_text);
+            default :
+                $img_text = $arr['text_type'];
+                break;
         }
 
         $img_text = substr($img_text, 0, $arr['len']);
 
-        imagestring($image, $font, $arr['cx'], $arr['cy'], $img_text, $text_color);
+        /*
+         * Font Style
+         * Adding Font, Colour and Text
+         * 
+         * If no Font Style
+         */
+        if ($arr['font_style'] === '') {
+            $font = mt_rand(3, 6);
+            imagestring($image, $font, $arr['cx'], $arr['cy'], $img_text, $text_color);
+        } else {
+            /*
+             * If font exists
+             */
+            $angle = mt_rand(-6, 6);
+            imagettftext($image, $arr['font_size'], $angle, $arr['cx'], $arr['cy'], $text_color, $arr['font_style'], $img_text);
+        }
 
-        if ($arr['im_path'] != '') {
-            $im_file = imagecreatefrompng($arr['im_path']);
-            imagecopymerge($im_file, $image, 0, 0, 0, 0, $arr['width'], $arr['height'], 35);
-            imagepng($im_file, $arr['s_path'] . $arr['sim_nam'] . '.png', 9);
+        /*
+         * Saving Image
+         * 
+         * Adding Extra Image
+         */
+        if ($arr['add_img'] !== '') {
+            $im_file = imagecreatefrompng($arr['add_img']);
+            imagecopymerge($im_file, $image, 0, 0, 0, 0, $arr['width'], $arr['height'], 55);
+            imagepng($im_file, $arr['image_path'] . $arr['image_name'] . '.png', 9);
             imagedestroy($image);
             imagedestroy($im_file);
         } else {
-            imagepng($image, $arr['s_path'] . $arr['sim_nam'] . '.png', 9);
+            /*
+             * If no extra image
+             */
+            imagepng($image, $arr['image_path'] . $arr['image_name'] . '.png', 9);
             imagedestroy($image);
         }
 
+        /*
+         * Set Session 
+         */
         $_SESSION['captcha_code'] = hash('sha256', $img_text);
-        $_SESSION['captcha_path'] = $arr['s_path'] . $arr['sim_nam'] . '.png';
+        $_SESSION['captcha_path'] = $arr['image_path'] . $arr['image_name'] . '.png';
     }
 
     /*
@@ -107,34 +152,99 @@ class captcha {
 
     public function form($para = array()) {
 
-        if (!isset($para['len']))
+        /*
+         * Length of the Text
+         */
+        if (!isset($para['len'])) {
             $para['len'] = '4';
-        if (!isset($para['color']))
+        }
+        /*
+         * Colour of the Background
+         */
+        if (!isset($para['color'])) {
             $para['color'] = 'rand';
-        if (!isset($para['style']))
+        }
+        /*
+         * Line, Pixel(Dots)
+         */
+        if (!isset($para['style'])) {
             $para['style'] = 'both';
-        if (!isset($para['the_text']))
-            $para['the_text'] = '';
-        if (!isset($para['width']))
+        }
+        /*
+         * String or Number or User Define
+         */
+        if (!isset($para['text_type'])) {
+            $para['text_type'] = 'str';
+        }
+        /*
+         * Width Of the Image
+         */
+        if (!isset($para['width'])) {
             $para['width'] = '75';
-        if (!isset($para['height']))
+        }
+        /*
+         * Height Of the Image
+         */
+        if (!isset($para['height'])) {
             $para['height'] = '25';
-        if (!isset($para['cx']))
+        }
+        /*
+         * Image Text x-ordinate
+         */
+        if (!isset($para['cx'])) {
             $para['cx'] = '15';
-        if (!isset($para['cy']))
+        }
+        /*
+         * Image Text y-ordinate
+         */
+        if (!isset($para['cy'])) {
             $para['cy'] = '5';
-        if (!isset($para['s_path']))
-            $para['s_path'] = '';
-        if (!isset($para['sim_nam']))
-            $para['sim_nam'] = time();
-        if (!isset($para['font']))
-            $para['font'] = '';
-        if (!isset($para['im_path']))
-            $para['im_path'] = '';
+        }
+        /*
+         * Create Image Name
+         */
+        if (!isset($para['image_name'])) {
+            $para['image_name'] = time();
+        }
+        /*
+         * Save Path
+         */
+        if (!isset($para['image_path'])) {
+            $para['image_path'] = '';
+        }
+        /*
+         * Add or Marge Extra Image
+         */
+        if (!isset($para['add_img'])) {
+            $para['add_img'] = '';
+        }
+        /*
+         * Use `.ttf` font
+         */
+        if (!isset($para['font_style'])) {
+            $para['font_style'] = '';
+        }
+        /*
+         * Font Size if using `.ttf` font
+         */
+        if (!isset($para['font_size'])) {
+            $para['font_size'] = '12';
+        }
+
+        /*
+         * Set Token
+         */
+        for ($i = -1; $i <= 4; $i++) {
+            $ran = mt_rand(16, 32);
+            $bytes = openssl_random_pseudo_bytes($ran, $crypto_strong);
+            $token = bin2hex($bytes);
+        }
+        $_SESSION['captcha_token'] = $token;
 
         $this->create($para);
-        echo '<img src="' . $para['s_path'] . $para['sim_nam'] . '.png?c=' . mt_rand(999, 99999) . '" alt="CAPTCHA" />' . "\n";
-        echo '<input class="vp_captcha_text" name="captcha_text" type="text" placeholder="CAPTCHA" autocomplete="off" />';
+        echo '<img src="' . $para['image_path'] . $para['image_name'] . '.png?c=' . mt_rand(1000, 99999) . '" alt="CAPTCHA" />' . PHP_EOL;
+        echo '<input class="captcha_text" name="captcha_text" type="text" placeholder="CAPTCHA" autocomplete="off" />';
+        echo '<input type="hidden" name="captcha_token" value="' . $token . '" />';
         unset($para);
     }
 
@@ -143,16 +253,45 @@ class captcha {
      */
 
     public function valid() {
+        /*
+         * Delete Captcha Image File
+         */
         if (file_exists($_SESSION['captcha_path'])) {
             unlink($_SESSION['captcha_path']);
         }
-        $captcha_code = $_SESSION['captcha_code'];
-        $_SESSION['captcha_code'] = null;
-        unset($_SESSION['captcha_code']);
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['captcha_text'])) {
-            return ($captcha_code === hash('sha256', $_POST['captcha_text']));
+        /*
+         * Remove Session Captcha Code
+         */
+        if (isset($_SESSION['captcha_code'])) {
+            $captcha_code = $_SESSION['captcha_code'];
+            $_SESSION['captcha_code'] = null;
+            unset($_SESSION['captcha_code']);
+        } else {
+            return false;
         }
+
+        /*
+         * Remove Session Captcha Token
+         */
+        if (isset($_SESSION['captcha_token'])) {
+            $captcha_token = $_SESSION['captcha_token'];
+            $_SESSION['captcha_token'] = null;
+            unset($_SESSION['captcha_token']);
+        } else {
+            return false;
+        }
+
+        /*
+         * Checking 
+         */
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['captcha_text']) && isset($_POST['captcha_token'])) {
+            if ($captcha_code === hash('sha256', $_POST['captcha_text']) && $captcha_token === $_POST['captcha_token']) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     function __destruct() {

@@ -1,5 +1,19 @@
 # Change Log & History
 
+#### 24-09-2016
+	Stable Version 1.2
+	
+	Improved:
+		Stability
+		captcha.php
+
+        Added:
+            `marge` in image.php
+	
+	Bug Fixed:
+		minify.php
+		captcha.php
+
 #### 19-09-2016
 	Stable Version 1.1
 

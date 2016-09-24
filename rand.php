@@ -44,7 +44,7 @@ class rand {
      * Random Crypto String
      */
 
-    public function crypt($bit = 128) {
+    public function crypt($bit = 32) {
         for ($i = -1; $i <= 4; $i++) {
             $bytes = openssl_random_pseudo_bytes($bit, $crypto_strong);
             $crypt = bin2hex($bytes);

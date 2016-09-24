@@ -39,11 +39,11 @@ class valid {
      * Email
      */
 
-    public function email($email, $host = 'false') {
+    public function email($email, $host = false) {
         if (filter_var($email, FILTER_VALIDATE_EMAIL) &&
                 preg_match('/^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i', $email)) {
 
-            if ($host === 'true') {
+            if ($host === true) {
                 return (checkdnsrr(array_pop(explode("@", $email)), "MX")) ? true : false;
             }
             return true;

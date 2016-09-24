@@ -32,14 +32,15 @@ class minify {
     public function css($file) {
         $buffer = file_get_contents($file);
 
-        $buffer = preg_replace('!/\*[^*]*\*+([^/][^*]*\*+)*/!', '', $buffer);
+        $search = [
+            '!/\*[^*]*\*+([^/][^*]*\*+)*/!',
+            '/\n|\r|\t|\r\n|  |   |    /',
+        ];
+        $buffer = preg_replace($search, '', $buffer);
 
-        $search = ['/ {/si', '/ }/si', '/ :|: /si'];
+        $search = ['/ {/s', '/ }/s', '/ :|: /s'];
         $replace = ['{', '}', ':'];
         $buffer = preg_replace($search, $replace, $buffer);
-
-        $search = ["\r\n", "\r", "\n", "\t", '  ', '    ', '    '];
-        $buffer = str_replace($search, '', $buffer);
         $buffer = trim($buffer, "\t\n\r\0\x0B");
 
         unset($file, $css, $search, $replace);
@@ -54,11 +55,12 @@ class minify {
     public function js($file) {
         $buffer = file_get_contents($file);
 
-        $buffer = preg_replace('!/\*[^*]*\*+([^/][^*]*\*+)*/!', '', $buffer);
+        $search = [
+            '!/\*[^*]*\*+([^/][^*]*\*+)*/!',
+            '/\n|\r|\t|\r\n|  |   |    /',
+        ];
 
-        $search = ['!/\*[^*]*\*+([^/][^*]*\*+)*/!', "/\n|\r|\t|\r\n|   |    /"];
-        $replace = '';
-        $buffer = preg_replace($search, $replace, $buffer);
+        $buffer = preg_replace($search, '', $buffer);
         $buffer = trim($buffer, "\t\n\r\0\x0B");
 
         unset($file, $search, $replace);
