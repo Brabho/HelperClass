@@ -1,5 +1,13 @@
 # Change Log & History
 
+#### 06-10-2016
+	Stable Version 1.3
+	Review All Files
+
+	Improved:
+		localDate in cf.php
+		varClean in cf.php
+
 #### 24-09-2016
 	Stable Version 1.2
 	

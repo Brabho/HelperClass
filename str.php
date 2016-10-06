@@ -106,10 +106,18 @@ class str {
         unset($hex, $string, $i);
     }
 
+    /*
+     * Mod ucwords
+     */
+
     public function ucWords($str) {
         return ucwords(strtolower($str));
         unset($str);
     }
+
+    /*
+     * Mod ucfirst
+     */
 
     public function ucFirst($str) {
         return ucfirst(strtolower($str));

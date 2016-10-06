@@ -89,12 +89,12 @@ class cf {
      * Local Date
      */
 
-    public function localDate($timezone, $time = null, $ptrn = 'd/m/Y h:i:sa') {
+    public function localDate($timezone = null, $time = null, $ptrn = 'd-m-Y h:i:sa') {
+        if (isset($timezone) && function_exists('date_default_timezone_set')) {
+            date_default_timezone_set($timezone);
+        }
         if (!isset($time)) {
             $time = time();
-        }
-        if (function_exists('date_default_timezone_set')) {
-            date_default_timezone_set($timezone);
         }
         return date($ptrn, $time);
         unset($timezone, $time, $ptrn);
@@ -188,14 +188,13 @@ class cf {
 
     public function varClean() {
         foreach (array_keys(get_defined_vars()) as $var) {
-            if ($var == 'GLOBALS' || $var == '_POST' || $var == '_GET' || $var == '_COOKIE' ||
-                    $var == '_FILES' || $var == '_REQUEST' || $var == '_SERVER' || $var == '_ENV') {
+            if ($var === 'GLOBALS' || $var === '_POST' || $var === '_GET' || $var === '_COOKIE' ||
+                    $var === '_FILES' || $var === '_REQUEST' || $var === '_SERVER' || $var === '_ENV') {
 
                 continue;
             }
             unset($var);
         }
-        unset($vp);
         clearstatcache();
     }
 

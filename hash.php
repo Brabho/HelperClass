@@ -2,7 +2,6 @@
 
 /*
  * Hashing Class
- * One Way *
  */
 
 class hash {

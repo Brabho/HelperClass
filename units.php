@@ -35,11 +35,11 @@ class units {
         $arr = [
             'second' => 1,
             'minute' => 60,
-            'hour'   => 3600,
-            'day'    => 86400,
-            'week'   => 604800,
-            'month'  => 2592000,
-            'year'   => 31536000,
+            'hour' => 3600,
+            'day' => 86400,
+            'week' => 604800,
+            'month' => 2592000,
+            'year' => 31536000,
             'decade' => 315360000
         ];
 
@@ -60,7 +60,7 @@ class units {
         $arr = [
             'milli' => 1000,
             'micro' => 1000000,
-            'nano'  => 1000000000
+            'nano' => 1000000000
         ];
 
         if (array_key_exists($key, $arr)) {
