@@ -8,7 +8,7 @@ Most used classes and functions
 LightWeight & Fast
 
 ### Version 
-Stable Version 1.3
+Stable Version 1.3.2
 
 ### Tested
 PHP    (5.5, 5.6)
@@ -49,6 +49,33 @@ class myClass extends upload {
         $this->mime; // mime type has to be array e.g. [image/jpeg]
         $this->extension; // has to be array e.g [jpg, jpeg]
          */
+    }
+}
+
+// Database Query
+require_once "db.php"
+class myClass extends db {
+    function __construct() {
+        $details = [
+            'host' => '127.0.0.1',
+            'db_name' => 'db_name',
+            'user' => 'root',
+            'pass' => '',
+        ];
+
+       $this->connect($details);
+       
+       $query = 'SELECT * FROM users WHERE id=:id';
+       $bind = [
+           ':id' => '4'
+       ];
+       $arg = [
+           'result' => true,
+           'fetch' => 'fetch' // 'fetch/fetchAll' NULL wont fetch database ,
+           'fetch_arg' => PDO::FETCH_ASSOC, // default is NULL
+       ];
+       $qb = $this->qber($query, $bind, $arg);
+        var_dump($qb);
     }
 }
 ```

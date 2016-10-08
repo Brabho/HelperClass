@@ -1,5 +1,17 @@
 # Change Log & History
 
+#### 08-10-2016
+	Stable Version 1.3.2
+
+	Improved:
+		db.php
+
+	Added:
+		ping in db.php
+
+	Bug Fixed:
+		db.php
+
 #### 06-10-2016
 	Stable Version 1.3
 	Review All Files
