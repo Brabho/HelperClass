@@ -8,7 +8,7 @@ Most used classes and functions
 LightWeight & Fast
 
 ### Version 
-Stable Version 1.3.2
+Stable Version 1.3.3
 
 ### Tested
 PHP    (5.5, 5.6)
@@ -64,18 +64,18 @@ class myClass extends db {
         ];
 
        $this->connect($details);
-       
+
        $query = 'SELECT * FROM users WHERE id=:id';
        $bind = [
            ':id' => '4'
        ];
        $arg = [
-           'result' => true,
+           'result' => true, // return rowcount, execute success or fail
            'fetch' => 'fetch' // 'fetch/fetchAll' NULL wont fetch database ,
            'fetch_arg' => PDO::FETCH_ASSOC, // default is NULL
        ];
        $qb = $this->qber($query, $bind, $arg);
-        var_dump($qb);
+       var_dump($qb);
     }
 }
 ```

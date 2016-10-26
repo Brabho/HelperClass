@@ -1,5 +1,9 @@
 # Change Log & History
 
+#### 26-10-2016
+	Stable Version 1.3.3
+	Stability Improved
+
 #### 08-10-2016
 	Stable Version 1.3.2
 

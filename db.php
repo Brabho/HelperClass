@@ -14,10 +14,10 @@ class db {
 
     public function connect($db_id) {
 
-        $host = $db_id['host'];
-        $db_name = $db_id['db_name'];
-        $user = $db_id['user'];
-        $pass = $db_id['pass'];
+        $host = $db_id['HOST'];
+        $db_name = $db_id['DB_NAME'];
+        $user = $db_id['USER'];
+        $pass = $db_id['PASS'];
 
         try {
             $this->contodb = new PDO("mysql:$host=;dbname=$db_name;charset=utf8", $user, $pass);

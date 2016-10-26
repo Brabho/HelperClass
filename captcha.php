@@ -3,6 +3,7 @@
 /*
  * Captcha Class
  * GD Require
+ * Font `.ttf`
  */
 
 class captcha {
