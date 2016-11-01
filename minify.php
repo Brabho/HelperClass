@@ -29,43 +29,39 @@ class minify {
      * CSS
      */
 
-    public function css($file) {
-        $buffer = file_get_contents($file);
-
+    public function css($css) {
         $search = [
             '!/\*[^*]*\*+([^/][^*]*\*+)*/!',
             '/\n|\r|\t|\r\n|  |   |    /',
         ];
-        $buffer = preg_replace($search, '', $buffer);
+        $css = preg_replace($search, '', $css);
 
         $search = ['/ {/s', '/ }/s', '/ :|: /s'];
         $replace = ['{', '}', ':'];
-        $buffer = preg_replace($search, $replace, $buffer);
-        $buffer = trim($buffer, "\t\n\r\0\x0B");
+        $css = preg_replace($search, $replace, $css);
+        $css = trim($css, "\t\n\r\0\x0B");
 
-        unset($file, $css, $search, $replace);
-        return $buffer;
-        unset($buffer);
+        unset($search, $replace);
+        return $css;
+        unset($css);
     }
 
     /*
      * JavaScript
      */
 
-    public function js($file) {
-        $buffer = file_get_contents($file);
-
+    public function js($js) {
         $search = [
             '!/\*[^*]*\*+([^/][^*]*\*+)*/!',
             '/\n|\r|\t|\r\n|  |   |    /',
         ];
 
-        $buffer = preg_replace($search, '', $buffer);
-        $buffer = trim($buffer, "\t\n\r\0\x0B");
+        $js = preg_replace($search, '', $js);
+        $js = trim($js, "\t\n\r\0\x0B");
 
-        unset($file, $search, $replace);
-        return $buffer;
-        unset($buffer);
+        unset($search);
+        return $js;
+        unset($js);
     }
 
     /*
@@ -73,14 +69,13 @@ class minify {
      */
 
     public function json($json) {
-        $buffer = '';
         $search = ['/[\p{Z}\s]{2,}/u'];
-        $buffer = preg_replace($search, '', $json);
-        $buffer = trim($buffer, "\t\n\r\0\x0B");
+        $json = preg_replace($search, '', $json);
+        $json = trim($json, "\t\n\r\0\x0B");
 
-        unset($json, $search);
-        return $buffer;
-        unset($buffer);
+        unset($search);
+        return $json;
+        unset($json);
     }
 
     /*
@@ -88,7 +83,6 @@ class minify {
      */
 
     public function xml($xml) {
-        $buffer = '';
         $search = [
             '/\>[^\S ]+|> |>  |>   /si',
             '/[^\S ]+\<| <|  <|   </si',
@@ -96,10 +90,10 @@ class minify {
             "/\r\n|\r|\n|\t|<!--(.*?)-->/si"
         ];
         $replace = ['> ', ' <', '\\1', ''];
-        $buffer = preg_replace($search, $replace, $xml);
-        $buffer = trim($buffer, "\t\n\r\0\x0B");
+        $xml = preg_replace($search, $replace, $xml);
+        $xml = trim($xml, "\t\n\r\0\x0B");
 
-        unset($xml, $search, $replace);
+        unset($search, $replace);
         return $xml;
         unset($xml);
     }
