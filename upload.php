@@ -1,7 +1,8 @@
 <?php
 
 /*
- * Upload File(s)
+ * Upload Class
+ * Securely upload File(s)
  */
 
 class upload {

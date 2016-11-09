@@ -9,7 +9,7 @@ class image {
     private $status;
     private $mime;
 
-    function __construct($arr = array()) {
+    function __construct($arr = []) {
 
         $this->status = [];
         $this->mime = [
@@ -35,7 +35,7 @@ class image {
     }
 
     /*
-     * Checking File
+     * Checking Image File
      */
 
     public function check($file, $mime = null) {
@@ -77,8 +77,9 @@ class image {
             switch ($to) {
 
                 /*
-                 * convert to jpeg
+                 * convert all to jpeg
                  */
+
                 case ($this->status['details']['mime'] === 'image/jpeg' && $to === 'jpeg'):
                     $image_obj = imagecreatefromjpeg($this->status['file']);
                     imagejpeg($image_obj, $this->real_path($file) . '.jpeg');
@@ -108,8 +109,9 @@ class image {
                     break;
 
                 /*
-                 * convert to png
+                 * convert all to png
                  */
+
                 case ($this->status['details']['mime'] === 'image/png' && $to === 'png'):
                     $image_obj = imagecreatefrompng($this->status['file']);
                     imagepng($image_obj, $this->real_path($file) . '.png');
@@ -144,8 +146,9 @@ class image {
                     break;
 
                 /*
-                 * convert to git
+                 * convert all to git
                  */
+
                 case ($this->status['details']['mime'] === 'image/gif' && $to === 'gif'):
                     $image_obj = imagecreatefromgif($this->status['file']);
                     imagegif($image_obj, $this->real_path($file) . '.gif');
@@ -176,21 +179,22 @@ class image {
                 /*
                  * Not Support
                  */
+
                 default:
                     $this->status[0] = 'fail';
                     $this->status['reason'] = 'not_support';
                     break;
             }
         }
-        return $this->status;
         unset($arr, $image_obj, $output, $white);
+        return $this->status;
     }
 
     /*
      * Crop Image
      */
 
-    public function crop($file, $arr = array()) {
+    public function crop($file, $arr = []) {
         $this->check($file);
         if (!is_numeric($arr['width']) || !is_numeric($arr['height'])) {
             $this->status[0] = 'fail';
@@ -257,16 +261,16 @@ class image {
                 }
             }
         }
-        return $this->status;
         unset($arr, $image, $width, $height, $original_aspect, $thumb_aspect, $new_height, $new_width, $thumb);
+        return $this->status;
     }
 
     /*
      * Marge 2 Images
-     * Support `.png`
+     * Support `.png` Only
      */
 
-    public function marge($file, $add, $arr = array()) {
+    public function marge($file, $add, $arr = []) {
         $add = $this->check($add);
         $file = $this->check($file);
 
@@ -298,7 +302,7 @@ class image {
      * All in One
      */
 
-    public function save($arr = array()) {
+    public function save($arr = []) {
 
         if (array_key_exists('mime', $arr) && is_array($arr['mime'])) {
             $this->mime = $arr['mime'];
@@ -332,8 +336,8 @@ class image {
             $this->status['saved'] = $new_save;
         }
 
-        return $this->status;
         unset($arr, $new_save);
+        return $this->status;
     }
 
     function __destruct() {

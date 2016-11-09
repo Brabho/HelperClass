@@ -4,7 +4,7 @@
  * Directory Class
  */
 
-class dir {
+class dirs {
     /*
      * Make Directory
      */

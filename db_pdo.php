@@ -1,10 +1,11 @@
 <?php
 
 /*
- * PDO Database Class
+ * Mysql Database
+ * PDO Class
  */
 
-class db {
+class db_pdo {
 
     private $contodb;
 
@@ -19,11 +20,20 @@ class db {
         $user = $db_id['USER'];
         $pass = $db_id['PASS'];
 
+        if (isset($db_id['charset'])) {
+            $charset = $db_id['charset'];
+        } else {
+            $charset = 'utf8';
+        }
+
         try {
-            $this->contodb = new PDO("mysql:$host=;dbname=$db_name;charset=utf8", $user, $pass);
+            $this->contodb = new PDO("mysql:host=$host;dbname=$db_name;charset=$charset", $user, $pass);
             $this->contodb->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+            unset($db_id, $host, $db_name, $user, $pass, $charset);
             return $this->contodb;
         } catch (PDOException $ex) {
+            unset($db_id, $host, $db_name, $user, $pass, $charset);
             return false;
         }
     }
@@ -110,13 +120,13 @@ class db {
      * Search & Replace
      */
 
-    public function snr($arr = []) {
+    public function snr($table, $column, $search, $replace) {
         if ($this->ping(null)) {
-            $this->contodb->query('UPDATE ' . $arr['table'] . ' SET ' . $arr['column'] . ' = 
-		            REPLACE (' . $arr['column'] . ', "' . $arr['search'] . '", "' . $arr['replace'] . '")
-		            WHERE `' . $arr['column'] . '` LIKE "%' . $arr['search'] . '%" ');
+            $this->contodb->query("UPDATE $table 
+                SET $column = 
+                REPLACE ($column, '$search', '$replace')");
         }
-        unset($arr);
+        unset($table, $column, $search, $replace);
     }
 
     function __destruct() {

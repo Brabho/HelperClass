@@ -1,5 +1,18 @@
 # Change Log & History
 
+#### --
+    Stable Version 1.5
+    Few Major Bugs Fixed
+
+    Added:
+        Email Class `email` (Mail Function)
+        MySQLi Class `db_mysqli`
+        charset in db
+
+    Replace:
+        db to `db_pdo`
+        `dir` to `dirs`
+
 #### 01-11-2016
     Stable Version 1.4
     Few Major Bugs Fixed

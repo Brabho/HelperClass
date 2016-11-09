@@ -9,7 +9,7 @@ class str {
      * HTML Encode
      */
 
-    public function htm_enc($content, $arr = array()) {
+    public function htm_enc($content, $arr = []) {
         if (!array_key_exists('strip', $arr)) {
             $arr['strip'] = false;
         }

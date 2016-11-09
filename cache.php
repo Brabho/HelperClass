@@ -1,7 +1,7 @@
 <?php
 
 /*
- * PHP Server Side Cache Class
+ * Server Side Cache Class
  */
 
 class cache {

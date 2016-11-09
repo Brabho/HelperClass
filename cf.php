@@ -73,7 +73,7 @@ class cf {
 
     public function redirect($link, $refresh = '') {
         ob_start();
-        if (ob_get_contents()) {
+        while (ob_get_contents()) {
             ob_end_clean();
         }
         if (strlen($refresh) > 0 && is_numeric($refresh)) {
@@ -106,12 +106,11 @@ class cf {
 
     public function download($file, $param = []) {
         if (file_exists($file)) {
-
-            if (ob_get_contents()) {
+            while (ob_get_contents()) {
                 ob_end_clean();
             }
             if (!array_key_exists('file_name', $param)) {
-                $param['ame'] = ucfirst(strtolower(basename($file)));
+                $param['ame'] = ucwords(strtolower(basename($file)));
             }
             if (!array_key_exists('file_type', $param)) {
                 $param['type'] = 'application/octet-stream';
@@ -193,6 +192,7 @@ class cf {
 
                 continue;
             }
+            $var = null;
             unset($var);
         }
         clearstatcache();

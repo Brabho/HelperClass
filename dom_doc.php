@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Dom Document Class
+ * DOM Document Class
  */
 
 class dom_doc {
