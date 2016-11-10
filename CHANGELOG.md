@@ -1,8 +1,9 @@
 # Change Log & History
 
-#### --
+#### 09-11-2016
     Stable Version 1.5
     Few Major Bugs Fixed
+    Checked All Files
 
     Added:
         Email Class `email` (Mail Function)
