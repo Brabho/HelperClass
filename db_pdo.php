@@ -92,7 +92,7 @@ class db_pdo {
                 if (!isset($arr['fetch_arg'])) {
                     $arr['fetch_arg'] = null;
                 }
-                $result['fetch'] = $dbh->$arr['fetch']($arr['fetch_arg']);
+                $result['fetch'] = $dbh->{$arr['fetch']}($arr['fetch_arg']);
             }
 
             return (isset($result)) ? $result : $dbh;

@@ -11,7 +11,7 @@ LightWeight & Fast
 Stable Version 1.5
 
 ### Tested
-PHP    (5.5, 5.6)
+PHP    (5.5, 5.6, 7.0)
 
 Apache (2.2, 2.4)
 

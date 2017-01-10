@@ -51,16 +51,34 @@ class str {
      * Mod Trim
      */
 
-    public function trims($content, $delmi = " \t\n\r\0\x0B", $white = false) {
+    public function trims($content, $delmi = " \t\n\r\0\x0B", $white = null) {
         $content = trim($content, $delmi);
         $content = ltrim($content, $delmi);
         $content = rtrim($content, $delmi);
 
-        if ($white === true) {
-            $content = preg_replace('/\s+/', $space, $content);
+        if (isset($white)) {
+            $content = preg_replace('/\s+/', $white, $content);
         }
         unset($delmi, $white);
         return $content;
+    }
+
+    /*
+     * Mod ucwords
+     */
+
+    public function ucWords($str) {
+        return ucwords(strtolower($str));
+        unset($str);
+    }
+
+    /*
+     * Mod ucfirst
+     */
+
+    public function ucFirst($str) {
+        return ucfirst(strtolower($str));
+        unset($str);
     }
 
     public function strip_tags($text, $tags = '', $invert = false) {
@@ -104,24 +122,6 @@ class str {
         }
         return $string;
         unset($hex, $string, $i);
-    }
-
-    /*
-     * Mod ucwords
-     */
-
-    public function ucWords($str) {
-        return ucwords(strtolower($str));
-        unset($str);
-    }
-
-    /*
-     * Mod ucfirst
-     */
-
-    public function ucFirst($str) {
-        return ucfirst(strtolower($str));
-        unset($str);
     }
 
     function __destruct() {

@@ -157,7 +157,7 @@ class visitor {
 
     /*
      * All in one 
-     * Slow **
+     * Slow *
      */
 
     public function all_details() {

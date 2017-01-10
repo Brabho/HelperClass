@@ -2,7 +2,6 @@
 
 /*
  * Minify class
- * (HTML, CSS, JavaScript, JSON, XML)
  */
 
 class minify {

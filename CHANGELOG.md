@@ -1,5 +1,16 @@
 # Change Log & History
 
+#### 10-01-2017
+    Stable Version 1.6
+
+    Improved:
+        benchmark.php
+        db_pdo.php
+        `trims`             > str.php
+
+    Changed:
+        BenchMark.php       > benchmark.php
+
 #### 09-11-2016
     Stable Version 1.5
     Few Major Bugs Fixed
