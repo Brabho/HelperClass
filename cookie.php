@@ -9,9 +9,23 @@ class cookie {
      * Set Cookie
      */
 
-    public function set($name, $value, $extime = 86400, $path = '/') {
-        setcookie($name, $value, time() + $extime, $path);
-        unset($name, $value, $extime, $path);
+    public function set($name, $value, $extime = 86400, $arr = []) {
+
+        if (!array_key_exists('path', $arr)) {
+            $arr['path'] = '/';
+        }
+        if (!array_key_exists('domain', $arr)) {
+            $arr['domain'] = null;
+        }
+        if (!array_key_exists('secure', $arr)) {
+            $arr['secure'] = null;
+        }
+        if (!array_key_exists('http', $arr)) {
+            $arr['http'] = true;
+        }
+
+        setcookie($name, $value, time() + $extime, $arr['path'], $arr['domain'], $arr['secure'], $arr['http']);
+        unset($name, $value, $extime, $arr);
     }
 
     /*
@@ -27,7 +41,7 @@ class cookie {
      */
 
     public function remove($name, $path = '/') {
-        setcookie($name, '', time() - 86400, $path);
+        setcookie($name, '0', time() - 86400, $path);
         unset($name);
     }
 
@@ -37,7 +51,7 @@ class cookie {
 
     public function removeAll($path = '/') {
         foreach ($_COOKIE as $cookie => $c_val) {
-            setcookie($cookie, '', time() - 86400, $path);
+            setcookie($cookie, '0', time() - 86400, $path);
         }
     }
 

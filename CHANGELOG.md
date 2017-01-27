@@ -1,5 +1,15 @@
 # Change Log & History
 
+#### 27-01-2017
+    Stable Version 1.7
+
+    Improved:
+        rand.php
+        cookie.php
+
+    Added:
+        `pass`              > hash.php
+
 #### 10-01-2017
     Stable Version 1.6
 

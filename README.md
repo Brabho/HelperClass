@@ -3,12 +3,12 @@
 ### Description
 PHP Helper Class
 
-Most used classes and functions
+Most used classes and functions.
 
-LightWeight & Fast
+LightWeight & Fast.
 
 ### Version 
-Stable Version 1.5
+Stable Version 1.7
 
 ### Tested
 PHP    (5.5, 5.6, 7.0)

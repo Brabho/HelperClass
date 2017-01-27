@@ -44,11 +44,13 @@ class rand {
      * Random Crypto String
      */
 
-    public function crypt($bit = 32) {
+    public function crypt($bit = 64) {
+        $bit = $bit / 2;
         for ($i = -1; $i <= 4; $i++) {
             $bytes = openssl_random_pseudo_bytes($bit, $crypto_strong);
             $crypt = bin2hex($bytes);
         }
+        unset($i, $bit, $bytes, $crypto_strong);
         return $crypt;
     }
 

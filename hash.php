@@ -43,12 +43,27 @@ class hash {
     }
 
     /*
-     * Main Function
+     * Value Hash Function
      */
 
     public function val($str, $arr = array()) {
         return $this->hashing($str, $arr);
         unset($str, $arr);
+    }
+
+    /*
+     * Hashing password
+     */
+
+    public function pass($pass) {
+        $options = [
+            'cost' => 12,
+            'salt' => mcrypt_create_iv(24, MCRYPT_DEV_URANDOM),
+        ];
+        $pass = password_hash($pass, PASSWORD_BCRYPT, $options);
+        unset($options);
+        return $pass;
+        unset($pass);
     }
 
     function __destruct() {
