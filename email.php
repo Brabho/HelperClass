@@ -66,7 +66,7 @@ class email {
             if (isset($name)) {
                 $this->header .= "From: " . $name . " <" . $from . ">\r\n";
             } else {
-                $this->header .="From: " . $from . "\r\n";
+                $this->header .= "From: " . $from . "\r\n";
             }
         } else {
             $this->status[0] = 'fail';

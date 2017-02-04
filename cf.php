@@ -9,18 +9,16 @@ class cf {
      * Isset Variable
      */
 
-    public function is_var(&$var, $match = null) {
-        return (isset($var) && $var !== null && !empty($var) && strlen($var) > 0);
-        unset($var, $match);
+    public function is_var(&$var) {
+        return (isset($var) && $var !== null && $var !== '' && !empty($var) && strlen($var) > 0);
     }
 
     /*
      * Isset Array Key
      */
 
-    public function is_arr(&$var, $key, $match = null) {
-        return (isset($var) && is_array($var) && array_key_exists($key, $var) && $var[$key] !== null && !empty($var[$key]));
-        unset($var, $key, $match);
+    public function is_arr(&$var, $key) {
+        return (isset($var) && is_array($var) && array_key_exists($key, $var) && $var[$key] !== null && $var[$key] !== '' && !empty($var[$key]));
     }
 
     /*

@@ -1,5 +1,12 @@
 # Change Log & History
 
+#### 04-02-2017
+    Stable Version 1.8
+    Checked All Files
+
+    Improved:
+        cf.php
+
 #### 27-01-2017
     Stable Version 1.7
 

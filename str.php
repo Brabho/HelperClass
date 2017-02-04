@@ -117,7 +117,7 @@ class str {
 
     public function hex2str($hex) {
         $string = '';
-        for ($i = 0; $i < strlen($hex) - 1; $i+=2) {
+        for ($i = 0; $i < strlen($hex) - 1; $i += 2) {
             $string .= chr(hexdec($hex[$i] . $hex[$i + 1]));
         }
         return $string;

@@ -8,7 +8,7 @@ Most used classes and functions.
 LightWeight & Fast.
 
 ### Version 
-Stable Version 1.7
+Stable Version 1.8
 
 ### Tested
 PHP    (5.5, 5.6, 7.0)

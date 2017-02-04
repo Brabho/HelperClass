@@ -78,7 +78,7 @@ class gets {
         }
         $difference = round($difference);
         if ($difference != 1) {
-            $periods[$j].= "s";
+            $periods[$j] .= "s";
         }
         return $difference . ' ' . $periods[$j];
         unset($time, $periods, $lengths, $now, $difference, $j);
