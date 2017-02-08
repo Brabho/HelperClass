@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Check BenchMark
+ * Check Benchmark
  */
 
 class benchmark {
