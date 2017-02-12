@@ -10,7 +10,7 @@ class cf {
      */
 
     public function is_var(&$var) {
-        return (isset($var) && $var !== null && $var !== '' && !empty($var) && strlen($var) > 0);
+        return (isset($var) && $var !== null && $var !== '' && !empty($var) && strlen(trim($var)) > 0);
     }
 
     /*

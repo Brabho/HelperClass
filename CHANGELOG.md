@@ -1,5 +1,15 @@
 # Change Log & History
 
+#### 12-02-2017
+    Stable Version 1.9
+    Checked All Files
+
+    Improved:
+        `is_var`            > cf.php
+
+    Added:
+        ftp.php
+
 #### 04-02-2017
     Stable Version 1.8
     Checked All Files

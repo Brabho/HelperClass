@@ -65,9 +65,9 @@ class valid {
      * URL
      */
 
-    public function url($str, $qstr = 'false') {
+    public function url($str, $qstr = false) {
         $url = urldecode($str);
-        if ($qstr === 'true') {
+        if ($qstr === true) {
             return (filter_var($url, FILTER_VALIDATE_URL, FILTER_FLAG_QUERY_REQUIRED));
         } else {
             return (filter_var($url, FILTER_VALIDATE_URL));

@@ -7,6 +7,9 @@
 
 class upload {
 
+    private $status;
+    private $compare;
+    private $name;
     public $file_name;
     public $new_name;
     public $save;
@@ -17,9 +20,6 @@ class upload {
     public $space;
     public $mime;
     public $extension;
-    private $status;
-    private $compare;
-    private $name;
 
     function __construct() {
 
