@@ -29,9 +29,13 @@ class email {
         $this->message = '';
         $this->header = '';
 
+        if (!array_key_exists('charset', $arr)) {
+            $arr['charset'] = 'utf-8';
+        }
+
         if (isset($arr['html']) && $arr['html'] === true) {
             $this->header .= "MIME-Version: 1.0\r\n";
-            $this->header .= "Content-type:text/html;charset=utf-8\r\n";
+            $this->header .= "Content-type:text/html;charset=" . $arr['charset'] . "\r\n";
             $this->header .= "X-Mailer: PHP- " . phpversion() . "\r\n";
         }
 

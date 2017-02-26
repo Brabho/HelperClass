@@ -19,6 +19,9 @@ class str {
         if (!array_key_exists('encode', $arr)) {
             $arr['encode'] = 'specialchars';
         }
+        if (!array_key_exists('charset', $arr)) {
+            $arr['charset'] = 'utf-8';
+        }
 
         if ($arr['strip'] === true) {
             $content = strip_tags($content, $arr['allow']);
@@ -26,11 +29,11 @@ class str {
 
         switch ($arr['encode']) {
             case 'specialchars':
-                $content = htmlspecialchars($content, ENT_QUOTES, 'UTF-8');
+                $content = htmlspecialchars($content, ENT_QUOTES, $arr['charset']);
                 break;
 
             case 'entities':
-                $content = htmlentities($content, ENT_QUOTES, 'UTF-8');
+                $content = htmlentities($content, ENT_QUOTES, $arr['charset']);
                 break;
         }
         unset($arr);

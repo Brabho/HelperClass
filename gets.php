@@ -27,6 +27,19 @@ class gets {
     }
 
     /*
+     * Slug / Link
+     */
+
+    public function slug($text, $charset = 'utf-8') {
+        $text = htmlentities($text, ENT_NOQUOTES, $charset);
+        $text = preg_replace('~&([A-za-z])(?:acute|cedil|caron|circ|grave|orn|ring|slash|th|tilde|uml);~', '\1', $text);
+        $text = preg_replace('~&([A-za-z]{2})(?:lig);~', '\1', $text);
+        $text = preg_replace('~&[^;]+;~', '', $text);
+        return preg_replace('~[\s!*\'();:@&=+$,/?%#[\]]+~', '-', $text);
+        unset($text, $charset);
+    }
+
+    /*
      * Get Email, Image, Link By Regex
      */
 

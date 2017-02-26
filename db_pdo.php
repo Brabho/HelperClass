@@ -129,6 +129,38 @@ class db_pdo {
         unset($table, $column, $search, $replace);
     }
 
+    /*
+     * Database Pagination
+     */
+
+    public function pagination($query, $bind = [], $page_no = 1, $row = 10) {
+
+        $result = [];
+
+        if ($this->ping(null)) {
+            $getting = $this->qber($query, $bind, ['result' => true]);
+
+            $last = ceil($getting['rows'] / $row);
+
+            if ($last < 1) {
+                $last = 1;
+            }
+
+            if ($page_no > $last) {
+                $page_no = $last;
+            }
+
+            $limit = ' LIMIT ' . ($page_no - 1) * $row . ',' . $row;
+
+            $result = $this->qber($query . $limit, $bind, ['result' => true, 'fetch' => 'fetchAll']);
+            $result['total_rows'] = $getting['rows'];
+            $result['total_pages'] = $last;
+
+            unset($query, $bind, $page_no, $row, $getting, $last, $limit);
+            return $result;
+        }
+    }
+
     function __destruct() {
         unset($this);
     }

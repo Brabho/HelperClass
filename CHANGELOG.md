@@ -1,5 +1,14 @@
 # Change Log & History
 
+#### 26-02-2017
+    Stable Version 1.12
+
+    Added:
+        Charset
+        `slug`              > gets.php
+        header_status.php
+        pagination          > db_pdo.php
+
 #### 12-02-2017
     Stable Version 1.9
     Checked All Files
