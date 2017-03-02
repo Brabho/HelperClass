@@ -18,7 +18,7 @@ Nginx  (1.9, 1.10)
 Stable Version 1.13
 
 ### License
-(C) 2013 - 2016 under GNU General Public License Version 2.
+(C) 2013 - 2017 under GNU General Public License Version 2.
 
 ### Example
 ```php
