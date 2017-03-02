@@ -3,7 +3,7 @@
 ### Description
 PHP Helper Class
 
-Most used classes and functions.
+Most used Classes and Functions.
 
 LightWeight & Fast.
 
@@ -15,7 +15,7 @@ Apache (2.2, 2.4)
 Nginx  (1.9, 1.10)
 
 ### Version 
-Stable Version 1.12
+Stable Version 1.13
 
 ### License
 (C) 2013 - 2016 under GNU General Public License Version 2.

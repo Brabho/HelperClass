@@ -2,6 +2,7 @@
 
 /*
  * Captcha Class
+ * With CSRF Protection
  * GD Require
  * Font `.ttf`
  */
@@ -87,19 +88,15 @@ class captcha {
          * Generate Image Text (Number/String)
          */
 
+        $crypto_strong = true;
+
         switch ($arr['text_type']) {
             case 'num':
-                for ($i = -1; $i <= 4; $i++) {
-                    $bytes = openssl_random_pseudo_bytes(4, $crypto_strong);
-                    $img_text = hexdec(bin2hex($bytes));
-                }
+                $img_text = hexdec(bin2hex(openssl_random_pseudo_bytes(4, $crypto_strong)));
                 break;
 
             case 'str':
-                for ($i = -1; $i <= 4; $i++) {
-                    $bytes = openssl_random_pseudo_bytes(4, $crypto_strong);
-                    $img_text = bin2hex($bytes);
-                }
+                $img_text = bin2hex(openssl_random_pseudo_bytes(64, $crypto_strong));
                 break;
 
             default :
@@ -163,14 +160,14 @@ class captcha {
      * Creating Form
      */
 
-    public function form($para = array()) {
+    public function form($para = []) {
 
         /*
          * Length of the Text
          */
 
         if (!isset($para['len'])) {
-            $para['len'] = '4';
+            $para['len'] = '6';
         }
 
         /*
@@ -202,7 +199,7 @@ class captcha {
          */
 
         if (!isset($para['width'])) {
-            $para['width'] = '75';
+            $para['width'] = '80';
         }
 
         /*
@@ -210,7 +207,7 @@ class captcha {
          */
 
         if (!isset($para['height'])) {
-            $para['height'] = '25';
+            $para['height'] = '30';
         }
 
         /*
@@ -273,11 +270,8 @@ class captcha {
          * Set Token
          */
 
-        for ($i = -1; $i <= 4; $i++) {
-            $ran = mt_rand(16, 32);
-            $bytes = openssl_random_pseudo_bytes($ran, $crypto_strong);
-            $token = bin2hex($bytes);
-        }
+        $crypto_strong = true;
+        $token = bin2hex(openssl_random_pseudo_bytes(128, $crypto_strong));
 
         $_SESSION['captcha_token'] = $token;
 
@@ -285,7 +279,7 @@ class captcha {
 
         echo PHP_EOL . '<img src="' . $para['image_path'] . $para['image_name'] . '.png?t=' . time() . '" alt="CAPTCHA" />';
         echo PHP_EOL . '<input class="captcha_text" name="captcha_text" type="text" placeholder="CAPTCHA" autocomplete="off" />';
-        echo PHP_EOL . '<input type="hidden" name="captcha_token" value="' . $token . '" />';
+        echo PHP_EOL . '<input type="hidden" name="captcha_token" value="' . $token . '" />' . PHP_EOL;
 
         unset($para);
     }
@@ -332,7 +326,7 @@ class captcha {
          * Checking 
          */
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['captcha_text']) && isset($_POST['captcha_token'])) {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['captcha_text'], $_POST['captcha_token'])) {
             if ($captcha_code === hash('sha384', $_POST['captcha_text']) && $captcha_token === $_POST['captcha_token']) {
                 return true;
             }

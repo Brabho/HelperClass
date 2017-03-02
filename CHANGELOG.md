@@ -1,5 +1,16 @@
 # Change Log & History
 
+#### 02-03-2017
+    Stable Version 1.13
+
+    Improved:
+        captcha.php
+        minify.php
+
+    Added:
+        security.php
+        `php`               > minify.php
+
 #### 26-02-2017
     Stable Version 1.12
 

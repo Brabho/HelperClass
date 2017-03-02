@@ -35,8 +35,8 @@ class minify {
         ];
         $css = preg_replace($search, '', $css);
 
-        $search = ['/ {/s', '/ }/s', '/ :|: /s'];
-        $replace = ['{', '}', ':'];
+        $search = ['/ {/s', '/ }/s', '/ :|: /s', '/ ,|, /s'];
+        $replace = ['{', '}', ':', ','];
         $css = preg_replace($search, $replace, $css);
         $css = trim($css, "\t\n\r\0\x0B");
 
@@ -51,6 +51,7 @@ class minify {
 
     public function js($js) {
         $search = [
+            '/\/\/(.*)/',
             '!/\*[^*]*\*+([^/][^*]*\*+)*/!',
             '/\n|\r|\t|\r\n|  |   |    /',
         ];
@@ -61,6 +62,25 @@ class minify {
         unset($search);
         return $js;
         unset($js);
+    }
+
+    /*
+     * PHP
+     */
+
+    public function php($php) {
+        $search = [
+            '/\/\/(.*)/',
+            '!/\*[^*]*\*+([^/][^*]*\*+)*/!',
+            '/\n|\r|\t|\r\n|  |   |    /',
+        ];
+
+        $php = preg_replace($search, '', $php);
+        $php = trim($php, "\t\n\r\0\x0B");
+
+        unset($search);
+        return $php;
+        unset($php);
     }
 
     /*
