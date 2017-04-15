@@ -90,11 +90,10 @@ class ftp {
      * Close Connection
      */
 
-    function __destruct() {
+    public function close() {
         if (isset($this->conn)) {
             ftp_close($this->conn);
         }
-        unset($this);
     }
 
 }

@@ -55,10 +55,6 @@ class cookie {
         }
     }
 
-    function __destruct() {
-        unset($this);
-    }
-
 }
 
 ?>

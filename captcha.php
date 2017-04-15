@@ -4,7 +4,7 @@
  * Captcha Class
  * With CSRF Protection
  * GD Require
- * Font `.ttf`
+ * Font `.ttf` Only
  */
 
 class captcha {
@@ -277,7 +277,7 @@ class captcha {
 
         $this->create($para);
 
-        echo PHP_EOL . '<img src="' . $para['image_path'] . $para['image_name'] . '.png?t=' . time() . '" alt="CAPTCHA" />';
+        echo PHP_EOL . '<img class="captcha_img" src="' . $para['image_path'] . $para['image_name'] . '.png?t=' . time() . '" alt="CAPTCHA" />';
         echo PHP_EOL . '<input class="captcha_text" name="captcha_text" type="text" placeholder="CAPTCHA" autocomplete="off" />';
         echo PHP_EOL . '<input type="hidden" name="captcha_token" value="' . $token . '" />' . PHP_EOL;
 
@@ -294,7 +294,7 @@ class captcha {
          * Delete Captcha Image File
          */
 
-        if (file_exists($_SESSION['captcha_path'])) {
+        if (isset($_SESSION['captcha_path']) && file_exists($_SESSION['captcha_path'])) {
             unlink($_SESSION['captcha_path']);
         }
 
@@ -333,10 +333,6 @@ class captcha {
             return false;
         }
         return false;
-    }
-
-    function __destruct() {
-        unset($this);
     }
 
 }

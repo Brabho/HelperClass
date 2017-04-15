@@ -156,10 +156,6 @@ class email {
         return $this->status;
     }
 
-    function __destruct() {
-        unset($this);
-    }
-
 }
 
 ?>

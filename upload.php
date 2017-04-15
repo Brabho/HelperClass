@@ -38,7 +38,8 @@ class upload {
     }
 
     private function extension($file) {
-        return end(explode('.', $file));
+        $file = explode('.', $file);
+        return end($file);
     }
 
     private function mime($file) {
@@ -158,10 +159,6 @@ class upload {
     public function start() {
         $this->check2();
         return $this->status;
-    }
-
-    function __destruct() {
-        unset($this);
     }
 
 }

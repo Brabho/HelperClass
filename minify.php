@@ -6,10 +6,10 @@
 
 class minify {
     /*
-     * HTML
+     * HTML, xHTML, XML
      */
 
-    public static function html($html) {
+    public static function xtml($content) {
         $search = [
             '/\>[^\S ]+|> |>  |>   /si',
             '/[^\S ]+\<| <|  <|   </si',
@@ -17,11 +17,8 @@ class minify {
             "/\r\n|\r|\n|\t|<!--(.*?)-->/si"
         ];
         $replace = ['> ', ' <', '\\1', ''];
-        $html = preg_replace($search, $replace, $html);
-
-        unset($search, $replace);
-        return $html;
-        unset($html);
+        $content = preg_replace($search, $replace, $content);
+        return $content;
     }
 
     /*
@@ -39,48 +36,22 @@ class minify {
         $replace = ['{', '}', ':', ','];
         $css = preg_replace($search, $replace, $css);
         $css = trim($css, "\t\n\r\0\x0B");
-
-        unset($search, $replace);
         return $css;
-        unset($css);
     }
 
     /*
-     * JavaScript
+     * JavaScript, PHP
      */
 
-    public function js($js) {
+    public function script($script) {
         $search = [
-            '/\/\/(.*)/',
             '!/\*[^*]*\*+([^/][^*]*\*+)*/!',
             '/\n|\r|\t|\r\n|  |   |    /',
         ];
 
-        $js = preg_replace($search, '', $js);
-        $js = trim($js, "\t\n\r\0\x0B");
-
-        unset($search);
-        return $js;
-        unset($js);
-    }
-
-    /*
-     * PHP
-     */
-
-    public function php($php) {
-        $search = [
-            '/\/\/(.*)/',
-            '!/\*[^*]*\*+([^/][^*]*\*+)*/!',
-            '/\n|\r|\t|\r\n|  |   |    /',
-        ];
-
-        $php = preg_replace($search, '', $php);
-        $php = trim($php, "\t\n\r\0\x0B");
-
-        unset($search);
-        return $php;
-        unset($php);
+        $script = preg_replace($search, '', $script);
+        $script = trim($script, "\t\n\r\0\x0B");
+        return $script;
     }
 
     /*
@@ -91,34 +62,7 @@ class minify {
         $search = ['/[\p{Z}\s]{2,}/u'];
         $json = preg_replace($search, '', $json);
         $json = trim($json, "\t\n\r\0\x0B");
-
-        unset($search);
         return $json;
-        unset($json);
-    }
-
-    /*
-     * XML
-     */
-
-    public function xml($xml) {
-        $search = [
-            '/\>[^\S ]+|> |>  |>   /si',
-            '/[^\S ]+\<| <|  <|   </si',
-            '/(\s)+/si',
-            "/\r\n|\r|\n|\t|<!--(.*?)-->/si"
-        ];
-        $replace = ['> ', ' <', '\\1', ''];
-        $xml = preg_replace($search, $replace, $xml);
-        $xml = trim($xml, "\t\n\r\0\x0B");
-
-        unset($search, $replace);
-        return $xml;
-        unset($xml);
-    }
-
-    function __destruct() {
-        unset($this);
     }
 
 }

@@ -54,27 +54,30 @@ class visitor {
 
     public function browser() {
         $browser = 'Other';
-        $browser_arr = array(
-            '/msie|Trident/i' => 'Internet Explorer',
-            '/edge/i' => 'Edge',
-            '/firefox/i' => 'Firefox',
-            '/safari/i' => 'Safari',
-            '/chrome/i' => 'Chrome',
-            '/opera/i' => 'Opera',
-            '/netscape/i' => 'Netscape',
-            '/maxthon/i' => 'Maxthon',
-            '/konqueror/i' => 'Konqueror',
-            '/mobile/i' => 'Handheld Browser',
-            '/UCBrowser|UCWEB/i' => 'UC Browser'
-        );
+        $browser_arr = [
+            '@msie@i' => 'Internet Explorer',
+            '@Trident@i' => 'Internet Explorer',
+            '@edge@i' => 'Edge',
+            '@firefox@i' => 'Firefox',
+            '@opr@i' => 'Opera',
+            '@chrome@i' => 'Chrome',
+            '@safari@i' => 'Safari',
+            '@netscape@i' => 'Netscape',
+            '@maxthon@i' => 'Maxthon',
+            '@konqueror@i' => 'Konqueror',
+            '@mobile@i' => 'Handheld Browser',
+            '@UCBrowser|UCWEB@i' => 'UC Browser'
+        ];
         foreach ($browser_arr as $regex => $value) {
-            if (preg_match($regex, $this->header('User-Agent'))) {
+
+            if (preg_match_all($regex, $this->header('User-Agent'), $matchs)) {
                 $browser = $value;
                 break;
             }
         }
+
+        unset($browser_arr, $regex, $value);
         return $browser;
-        unset($browser, $browser_arr, $regex, $value);
     }
 
     /*
@@ -83,40 +86,42 @@ class visitor {
 
     public function os() {
         $os = 'Other';
-        $os_arr = array(
-            '/windows nt 10/i' => 'Windows 10',
-            '/windows nt 6.3/i' => 'Windows 8.1',
-            '/windows nt 6.2/i' => 'Windows 8',
-            '/windows nt 6.1/i' => 'Windows 7',
-            '/windows nt 6.0/i' => 'Windows Vista',
-            '/windows nt 5.2/i' => 'Windows Server 2003/XP x64',
-            '/windows nt 5.1/i' => 'Windows XP',
-            '/windows xp/i' => 'Windows XP',
-            '/windows nt 5.0/i' => 'Windows 2000',
-            '/windows me/i' => 'Windows ME',
-            '/win98/i' => 'Windows 98',
-            '/win95/i' => 'Windows 95',
-            '/win16/i' => 'Windows 3.11',
-            '/macintosh|mac os x/i' => 'Mac OS X',
-            '/mac_powerpc/i' => 'Mac OS 9',
-            '/linux/i' => 'Linux',
-            '/ubuntu/i' => 'Ubuntu',
-            '/Red Hat/i' => 'Red Hat',
-            '/iphone/i' => 'iPhone',
-            '/ipod/i' => 'iPod',
-            '/ipad/i' => 'iPad',
-            '/android/i' => 'Android',
-            '/blackberry/i' => 'BlackBerry',
-            '/webos/i' => 'Mobile'
-        );
+        $os_arr = [
+            '@windows nt 10@i' => 'Windows 10',
+            '@windows nt 6.3@i' => 'Windows 8.1',
+            '@windows nt 6.2@i' => 'Windows 8',
+            '@windows nt 6.1@i' => 'Windows 7',
+            '@windows nt 6.0@i' => 'Windows Vista',
+            '@windows nt 5.2@i' => 'Windows Server 2003/XP x64',
+            '@windows nt 5.1@i' => 'Windows XP',
+            '@windows xp@i' => 'Windows XP',
+            '@windows nt 5.0@i' => 'Windows 2000',
+            '@windows me@i' => 'Windows ME',
+            '@win98@i' => 'Windows 98',
+            '@win95@i' => 'Windows 95',
+            '@win16@i' => 'Windows 3.11',
+            '@macintosh|mac os x@i' => 'Mac OS X',
+            '@mac_powerpc@i' => 'Mac OS 9',
+            '@linux@i' => 'Linux',
+            '@ubuntu@i' => 'Ubuntu',
+            '@Red Hat@i' => 'Red Hat',
+            '@iphone@i' => 'iPhone',
+            '@ipod@i' => 'iPod',
+            '@ipad@i' => 'iPad',
+            '@android@i' => 'Android',
+            '@blackberry@i' => 'BlackBerry',
+            '@webos@i' => 'Mobile'
+        ];
         foreach ($os_arr as $regex => $value) {
+
             if (preg_match($regex, $this->header('User-Agent'))) {
                 $os = $value;
                 break;
             }
         }
+
+        unset($os_arr, $regex, $value);
         return $os;
-        unset($os, $os_arr, $regex, $value);
     }
 
     /*
@@ -171,10 +176,6 @@ class visitor {
         $details['location']['geoplugin'] = $this->location('geoplugin');
         $details['location']['ipinfo'] = $this->location('ipinfo');
         return $details;
-    }
-
-    function __destruct() {
-        unset($this);
     }
 
 }

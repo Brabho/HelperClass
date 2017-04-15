@@ -51,7 +51,7 @@ class session {
 
     public function remove($key) {
         $this->start();
-        $_SESSION[$key] = NULL;
+        $_SESSION[$key] = null;
         unset($_SESSION[$key], $key);
     }
 
@@ -79,10 +79,6 @@ class session {
         session_regenerate_id(true);
         $this->removeAll();
         session_destroy();
-    }
-
-    function __destruct() {
-        unset($this);
     }
 
 }

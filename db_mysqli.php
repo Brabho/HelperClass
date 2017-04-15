@@ -62,11 +62,6 @@ class db_mysqli {
         unset($table, $column, $search, $replace);
     }
 
-    function __destruct() {
-        $this->contodb->close();
-        unset($this);
-    }
-
 }
 
 ?>

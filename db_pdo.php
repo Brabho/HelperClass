@@ -27,7 +27,7 @@ class db_pdo {
         }
 
         try {
-            $this->contodb = new PDO("mysql:host=$host;dbname=$db_name;charset=$charset", $user, $pass);
+            $this->contodb = new PDO("mysql:host=$host;dbname=$db_name;charset=$charset", $user, $pass, [PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES $charset"]);
             $this->contodb->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
             unset($db_id, $host, $db_name, $user, $pass, $charset);
@@ -159,10 +159,6 @@ class db_pdo {
             unset($query, $bind, $page_no, $row, $getting, $last, $limit);
             return $result;
         }
-    }
-
-    function __destruct() {
-        unset($this);
     }
 
 }

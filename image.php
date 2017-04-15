@@ -50,6 +50,8 @@ class image {
                 $this->status['file'] = $file;
                 $this->status['saved'] = $file;
                 $this->status['real_name'] = basename($file);
+                $this->status['extn'] = explode('.', $this->status['real_name']);
+                $this->status['extn'] = '.' . end($this->status['extn']);
             } else {
                 $this->status[0] = 'fail';
                 $this->status['reason'] = 'not_img';
@@ -338,10 +340,6 @@ class image {
 
         unset($arr, $new_save);
         return $this->status;
-    }
-
-    function __destruct() {
-        unset($this);
     }
 
 }

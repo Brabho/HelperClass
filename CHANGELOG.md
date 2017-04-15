@@ -1,5 +1,19 @@
 # Change Log & History
 
+#### 16-04-2017
+    Stable Version 2.0
+
+    Improved:
+        image.php
+        minify.php
+        visitor.php
+
+    Removed:
+        benchmark.php
+        cache.php
+
+    All Removed Files are in helpers.php or Completely Removed
+
 #### 02-03-2017
     Stable Version 1.13
 
