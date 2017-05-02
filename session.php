@@ -18,9 +18,8 @@ class session {
                 session_start();
                 session_regenerate_id(true);
                 return true;
-            } else {
-                return false;
             }
+            return false;
         } else {
             return true;
         }

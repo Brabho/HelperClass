@@ -1,11 +1,11 @@
 # HelperClass
 
 ### Description
-PHP Helper Class
+PHP Helper Class & Function.
 
 Most used Classes and Functions.
 
-LightWeight & Fast.
+Lightweight, Fast, Useful.
 
 ### Tested
 PHP    (5.5, 5.6, 7.0, 7.1)
@@ -14,36 +14,33 @@ Apache (2.2, 2.4)
 
 Nginx  (1.9, 1.10)
 
-### Version 
-Stable Version 2.0
+### Version
+Stable Version 2.1
 
 ### License
 (C) 2013 - 2017 under GNU General Public License Version 2.
 
 ### Example
 ```php
-// Generate Number, String, Crypto String
-require_once "rand.php"
-class myClass extends rand {
-    function __construct() {
-        echo $this->str();
-    }
-}
+require "helpers.php";
+echo (is_var($var)) ? 'exists' : 'not exists';
+echo encrypt('text', ['p' => 'PrimaryKey', 's' => 'SecondaryKey']);
+echo rand_str();
 
 // Upload File(s) Securely 
-require_once "upload.php"
+require "upload.php";
 class myClass extends upload {
     function __construct() {
-        $this->file_name = 'FILE'; // input element name attribute
-        $this->Start();
-        
+        $this->file_name = 'FILE'; // input element name attribute's value
+        $this->start();
+
         /*
         Other Options
         $this->new_name = 'Name';
         $this->save = '/save/path';
         $this->min_size = '10'; // in byets
         $this->max_size = '2097152'; // in byets
-        $this->multi = true; // for multi file upload
+        $this->multi = true; // for multi files upload
         $this->overwrite; // true/false
         $this->space; // space replace with character e.g. '-'
         $this->mime; // mime type has to be array e.g. [image/jpeg]
@@ -53,7 +50,7 @@ class myClass extends upload {
 }
 
 // Database Query
-require_once "db.php"
+require "db.php";
 class myClass extends db {
     function __construct() {
         $details = [

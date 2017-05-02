@@ -104,7 +104,7 @@ class db_pdo {
      * Table Exists (Bool)
      */
 
-    public function table_exists($tablename) {
+    public function t_exists($tablename) {
         if ($this->ping(null)) {
             $tablename = preg_replace('/[^a-zA-Z0-9_]/', '', $tablename);
             try {
@@ -158,6 +158,49 @@ class db_pdo {
 
             unset($query, $bind, $page_no, $row, $getting, $last, $limit);
             return $result;
+        }
+    }
+
+    public function dump($tables = null, $name = null, $location = '') {
+        if (!isset($name)) {
+            $name = 'Dump_' . time();
+        }
+
+        $file = fopen($location . $name . '.sql', 'w');
+
+        $sql = '';
+        $sql .= 'SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";' . PHP_EOL . PHP_EOL;
+
+        if ($this->ping(null)) {
+
+            if (!isset($tables)) {
+                $query = $this->contodb->query('SHOW TABLES');
+                $tables_all = $query->fetchAll(PDO::FETCH_COLUMN);
+            } else {
+                $tables_all = $tables;
+            }
+
+            foreach ($tables_all as $table) {
+
+                $create = $this->contodb->query('SHOW CREATE TABLE `' . $table . '`')->fetch();
+                $cutoff = substr($create['Create Table'], 12);
+                $sql .= 'CREATE TABLE IF NOT EXISTS' . $cutoff . ';' . PHP_EOL;
+                fwrite($file, $sql);
+
+                $rows = $this->contodb->query('SELECT * FROM `' . $table . '`');
+                $rows->setFetchMode(PDO::FETCH_ASSOC);
+
+                foreach ($rows as $row) {
+                    $row = array_map([$this->contodb, 'quote'], $row);
+                    $sql = 'INSERT INTO `' . $table . '` (`' . implode('`, `', array_keys($row)) . '`) '
+                            . 'VALUES (' . implode(', ', $row) . ');' . PHP_EOL;
+                    fwrite($file, $sql);
+                }
+
+                $sql = PHP_EOL;
+                fwrite($file, $sql);
+            }
+            fclose($file);
         }
     }
 

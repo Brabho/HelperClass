@@ -274,7 +274,7 @@ function by_ptn($subject, $count = 'all', $pattern = null, $by = 'email') {
  * Encrypt Value
  */
 
-function encrypt($val, $arr = array()) {
+function encrypt($val, $arr = []) {
     $key = hash('sha256', $arr['p'] . $arr['s']);
     $val = $arr['p'] . $val . $arr['p'];
     $val = serialize(str_rot13($val));
@@ -291,7 +291,7 @@ function encrypt($val, $arr = array()) {
  * Decrypt Value
  */
 
-function decrypt($val, $arr = array()) {
+function decrypt($val, $arr = []) {
 
     $key = hash('sha256', $arr['p'] . $arr['s']);
     $val = explode('|', $val . '|');
@@ -654,7 +654,7 @@ function dom_load($html) {
  * Get All Meta Tags
  */
 
-function meta_tags($html) {
+function dom_metatags($html) {
     $metaTags = get_meta_tags($html);
     if ($load = dom_load($html)) {
 
@@ -674,7 +674,7 @@ function meta_tags($html) {
  * Get FavIcon
  */
 
-function favicon($html) {
+function dom_favicon($html) {
     $matches = '';
     if ($load = dom_load($html)) {
         foreach ($load->getElementsByTagName('link') as $node) {
@@ -694,7 +694,7 @@ function favicon($html) {
  * Get `a` Tag Link
  */
 
-function hrefs($html, $num = 'all') {
+function dom_hrefs($html, $num = 'all') {
     $matches = [];
     if ($load = dom_load($html)) {
         foreach ($load->getElementsByTagName('a') as $node) {
@@ -713,14 +713,16 @@ function hrefs($html, $num = 'all') {
 }
 
 /*
- * Get Script Tag Link
+ * Get Script Tag Links
  */
 
-function scripts($html, $num = 'all') {
+function dom_scripts($html, $num = 'all', $type = 'text/javascript') {
     $matches = [];
     if ($load = dom_load($html)) {
         foreach ($load->getElementsByTagName('script') as $node) {
-            $matches[] = $node->getAttribute('src');
+            if (strtolower($node->getAttribute('type')) === $type) {
+                $matches[] = $node->getAttribute('src');
+            }
         }
         if ($num === 'all') {
             return $matches;
@@ -735,15 +737,16 @@ function scripts($html, $num = 'all') {
 }
 
 /*
- * Get Css Link
+ * Get Css Links
  */
 
-function styles($html, $num = 'all') {
+function dom_styles($html, $num = 'all') {
     $matches = '';
     if ($load = dom_load($html)) {
         foreach ($load->getElementsByTagName('link') as $node) {
+            if (strtolower($node->getAttribute('rel')) === 'stylesheet' &&
+                    strtolower($node->getAttribute('tyle')) === 'text/css') {
 
-            if ($node->getAttribute('rel') == 'stylesheet') {
                 $matches[] = $node->getAttribute('href');
             }
         }
@@ -763,7 +766,7 @@ function styles($html, $num = 'all') {
  * PHP Comment Read
  */
 
-function comment_read($file_name, $count = 'all') {
+function get_comment($file_name, $count = 'all') {
     $tokens = token_get_all(file_get_contents($file_name));
     $comments = [];
     foreach ($tokens as $token) {
@@ -875,6 +878,5 @@ function format_bits($the_size) {
             break;
     }
 }
-
 
 ?>

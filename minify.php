@@ -6,7 +6,7 @@
 
 class minify {
     /*
-     * HTML, xHTML, XML
+     * HTML, XHTML, XML
      */
 
     public static function xtml($content) {

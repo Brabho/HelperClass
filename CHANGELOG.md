@@ -1,5 +1,15 @@
 # Change Log & History
 
+#### 02-05-2017
+    Stable Version 2.1
+    Stability Improved
+
+    Bug Fixed:
+        DOM styles & DOM scripts
+
+    Added:
+        `dump`      > db_pdo.php
+
 #### 16-04-2017
     Stable Version 2.0
 
