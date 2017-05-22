@@ -227,12 +227,22 @@ function uri_info($link) {
  * Slug / Link
  */
 
-function slug($text, $charset = 'utf-8') {
+function slug($text, $case = null, $charset = 'utf-8') {
     $text = htmlentities($text, ENT_NOQUOTES, $charset);
     $text = preg_replace('~&([A-za-z])(?:acute|cedil|caron|circ|grave|orn|ring|slash|th|tilde|uml);~', '\1', $text);
     $text = preg_replace('~&([A-za-z]{2})(?:lig);~', '\1', $text);
     $text = preg_replace('~&[^;]+;~', '', $text);
-    return preg_replace('~[\s!*\'();:@&=+$,/?%#[\]]+~', '-', $text);
+    $text = preg_replace('~[\s!*\'();:@&=+$,/?%#[\]]+~', '-', $text);
+
+    if (isset($case)) {
+        if ($case === 'up') {
+            return strtoupper($text);
+        } elseif ($case === 'low') {
+            return strtolower($text);
+        }
+    } else {
+        return $text;
+    }
 }
 
 /*
@@ -316,7 +326,6 @@ function decrypt($val, $arr = []) {
 /*
  * Random Number
  * Default 40
- * Maximum 60
  */
 
 function rand_num($length = 40) {
@@ -325,16 +334,15 @@ function rand_num($length = 40) {
         $num = hexdec(bin2hex($bytes));
     }
     $mtim = explode('.', microtime(true));
-    $num = rand(1000000000, 9999999999) . $num . $mtim[0] . mt_rand(1000000000, 9999999999) . $mtim[1] . time();
+    $num = rand(1000000, 9999999) . $num . $mtim[0] . mt_rand(1000000, 9999999) . $mtim[1] . time();
     $num = preg_replace('/[^0-9]/', '', serialize($num));
     $num = str_shuffle($num);
-    return substr($num, 0);
+    return substr($num, 0, $length);
 }
 
 /*
  * Random String
  * Default 40
- * Maximum 60
  */
 
 function rand_str($length = 40) {
@@ -878,5 +886,3 @@ function format_bits($the_size) {
             break;
     }
 }
-
-?>

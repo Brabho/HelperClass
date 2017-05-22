@@ -1,5 +1,12 @@
 # Change Log & History
 
+#### 22-05-2017
+    Stable Version 2.2
+    Bugs Fixed
+
+    Added:
+        Mod cURL
+
 #### 02-05-2017
     Stable Version 2.1
     Stability Improved

@@ -63,5 +63,3 @@ class db_mysqli {
     }
 
 }
-
-?>
