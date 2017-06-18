@@ -231,7 +231,7 @@ class captcha {
          */
 
         if (!isset($para['image_name'])) {
-            $para['image_name'] = time();
+            $para['image_name'] = time() . mt_rand(10000, 99999);
         }
 
         /*
@@ -240,6 +240,14 @@ class captcha {
 
         if (!isset($para['image_path'])) {
             $para['image_path'] = '';
+        }
+
+        /*
+         * Save Path
+         */
+
+        if (!isset($para['web_path_2dir'])) {
+            $para['web_path_2dir'] = '';
         }
 
         /*
@@ -277,7 +285,7 @@ class captcha {
 
         $this->create($para);
 
-        echo PHP_EOL . '<img class="captcha_img" src="' . $para['image_path'] . $para['image_name'] . '.png?t=' . time() . '" alt="CAPTCHA" />';
+        echo PHP_EOL . '<img class="captcha_img" src="' . $para['web_path_2dir'] . $para['image_path'] . $para['image_name'] . '.png?t=' . time() . '" alt="CAPTCHA" />';
         echo PHP_EOL . '<input class="captcha_text" name="captcha_text" type="text" placeholder="CAPTCHA" autocomplete="off" />';
         echo PHP_EOL . '<input type="hidden" name="captcha_token" value="' . $token . '" />' . PHP_EOL;
 

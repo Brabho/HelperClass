@@ -1,8 +1,7 @@
 <?php
 
 /*
- * Mysql Database
- * PDO Class
+ * PDO Database Class
  */
 
 class db_pdo {
@@ -104,7 +103,7 @@ class db_pdo {
      * Table Exists (Bool)
      */
 
-    public function t_exists($tablename) {
+    public function table_exists($tablename) {
         if ($this->ping(null)) {
             $tablename = preg_replace('/[^a-zA-Z0-9_]/', '', $tablename);
             try {

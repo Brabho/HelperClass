@@ -1,8 +1,7 @@
 <?php
 
 /*
- * Mysql Database
- * MySQLi Class
+ * MySQLi Database Class
  */
 
 class db_mysqli {

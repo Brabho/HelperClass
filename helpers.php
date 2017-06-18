@@ -3,9 +3,7 @@
 /*
  * Helper Class 
  * Custom & Mod Functions
- */
 
-/*
  * Isset Variable
  */
 
@@ -28,6 +26,19 @@ function is_arr(&$var, $key) {
 function is_json($str) {
     json_decode($str);
     return (json_last_error() === JSON_ERROR_NONE);
+}
+
+/*
+ * Get if Request by ajax (Return Bool)
+ */
+
+function is_ajax() {
+    if (array_key_exists('HTTP_X_REQUESTED_WITH', get_all_headers()) ||
+            array_key_exists('X-Requested-With', get_all_headers())) {
+
+        return true;
+    }
+    return false;
 }
 
 /*
@@ -90,7 +101,7 @@ function download($file, $param = []) {
             ob_end_clean();
         }
         if (!array_key_exists('file_name', $param)) {
-            $param['ame'] = ucwords(strtolower(basename($file)));
+            $param['file_name'] = ucwords(strtolower(basename($file)));
         }
         if (!array_key_exists('file_type', $param)) {
             $param['type'] = 'application/octet-stream';
@@ -102,7 +113,7 @@ function download($file, $param = []) {
         header("Content-Type: application/download");
         header('Content-Type: ' . $param['file_type']);
         header('Content-Disposition: attachment; filename=' . $param['file_name']);
-        header('Content-Length: ' . $param['file_length']);
+        header('Content-Length: ' . $param['length']);
         header('Content-Transfer-Encoding: binary');
         header('Connection: Keep-Alive');
         header('Expires: 0');
@@ -206,8 +217,9 @@ function dir_size($dir) {
 
 function mime_type($file) {
     $finfo = finfo_open(FILEINFO_MIME_TYPE);
-    return finfo_file($finfo, $file);
+    $info = finfo_file($finfo, $file);
     finfo_close($finfo);
+    return $info;
 }
 
 /*
@@ -388,7 +400,6 @@ function req_sec($exp = '3') {
     }
 
     list($_uri, $_exp) = explode('|', $_SESSION['req_sec']);
-
     return ($_uri === $uri && (time() - $_exp < $exp));
 }
 
@@ -495,7 +506,7 @@ function trims($content, $delmi = " \t\n\r\0\x0B", $white = null) {
  * Remove Tags with contents
  */
 
-function m_strip_tags($text, $tags = '', $invert = false) {
+function mod_strip_tags($text, $tags = '', $invert = false) {
     preg_match_all('/<(.+?)[\s]*\/?[\s]*>/si', trim($tags), $tags);
     $tags = array_unique($tags[1]);
     if (is_array($tags) && count($tags) > 0) {
@@ -641,6 +652,20 @@ function valid_url($str, $qstr = false) {
 }
 
 /*
+ * Get All Headers
+ */
+
+function get_all_headers() {
+    $headers = [];
+    foreach ($_SERVER as $name => $value) {
+        if (substr($name, 0, 5) === 'HTTP_') {
+            $headers[str_ireplace(' ', '-', ucwords(strtolower(str_ireplace('_', ' ', substr($name, 5)))))] = $value;
+        }
+    }
+    return $headers;
+}
+
+/*
  * Load DOM Document
  */
 
@@ -774,7 +799,7 @@ function dom_styles($html, $num = 'all') {
  * PHP Comment Read
  */
 
-function get_comment($file_name, $count = 'all') {
+function get_comments($file_name, $count = 'all') {
     $tokens = token_get_all(file_get_contents($file_name));
     $comments = [];
     foreach ($tokens as $token) {
@@ -885,4 +910,179 @@ function format_bits($the_size) {
             return '0B';
             break;
     }
+}
+
+/*
+ * HTML, XHTML, XML Minify
+ */
+
+function xtml_min($content) {
+    $search = [
+        '/\>[^\S ]+|> |>  |>   /si',
+        '/[^\S ]+\<| <|  <|   </si',
+        '/(\s)+/si',
+        "/\r\n|\r|\n|\t|<!--(.*?)-->/si"
+    ];
+    $replace = ['> ', ' <', '\\1', ''];
+    $content = preg_replace($search, $replace, $content);
+    return $content;
+}
+
+/*
+ * CSS Minify
+ */
+
+function css_min($css) {
+    $search = [
+        '!/\*[^*]*\*+([^/][^*]*\*+)*/!',
+        '/\n|\r|\t|\r\n|  |   |    /',
+    ];
+    $css = preg_replace($search, '', $css);
+
+    $search = ['/ {/s', '/ }/s', '/ :|: /s', '/ ,|, /s'];
+    $replace = ['{', '}', ':', ','];
+    $css = preg_replace($search, $replace, $css);
+    $css = trim($css, "\t\n\r\0\x0B");
+    return $css;
+}
+
+/*
+ * JavaScript, PHP Minify
+ */
+
+function script_min($script) {
+    $search = [
+        '!/\*[^*]*\*+([^/][^*]*\*+)*/!',
+        '/\n|\r|\t|\r\n|  |   |    /',
+    ];
+
+    $script = preg_replace($search, '', $script);
+    $script = trim($script, "\t\n\r\0\x0B");
+    return $script;
+}
+
+/*
+ * JSON Minify
+ */
+
+function json_min($json) {
+    $search = ['/[\p{Z}\s]{2,}/u'];
+    $json = preg_replace($search, '', $json);
+    $json = trim($json, "\t\n\r\0\x0B");
+    return $json;
+}
+
+/*
+ * Get User Referer
+ */
+
+function usr_referer() {
+    if (array_key_exists('HTTP_REFERER', $_SERVER) &&
+            $_SERVER['HTTP_REFERER'] !== null &&
+            !empty($_SERVER['HTTP_REFERER'])) {
+
+        return htm_en($_SERVER['HTTP_REFERER']);
+    } elseif (array_key_exists('Referer', get_all_headers())) {
+
+        return htm_en(get_all_headers()['Referer']);
+    }
+    return false;
+}
+
+/*
+ * Get User IP
+ */
+
+function usr_ip() {
+    if (is_arr($_SERVER, 'HTTP_CLIENT_IP')) {
+
+        return htm_en($_SERVER['HTTP_CLIENT_IP']);
+    } elseif (is_arr($_SERVER, 'HTTP_X_FORWARDED_FOR')) {
+
+        return htm_en($_SERVER['HTTP_X_FORWARDED_FOR']);
+    } elseif (is_arr($_SERVER, 'HTTP_X_REAL_IP')) {
+
+        return htm_en($_SERVER['HTTP_X_REAL_IP']);
+    } elseif (is_arr($_SERVER, 'REMOTE_ADDR')) {
+
+        return htm_en($_SERVER['REMOTE_ADDR']);
+    }
+
+    return false;
+}
+
+/*
+ * Get User Browser
+ */
+
+function usr_browser() {
+    $browser = 'Other';
+    $browser_arr = [
+        '@msie@i' => 'Internet Explorer',
+        '@Trident@i' => 'Internet Explorer',
+        '@edge@i' => 'Edge',
+        '@firefox@i' => 'Firefox',
+        '@opr@i' => 'Opera',
+        '@chrome@i' => 'Chrome',
+        '@safari@i' => 'Safari',
+        '@netscape@i' => 'Netscape',
+        '@maxthon@i' => 'Maxthon',
+        '@konqueror@i' => 'Konqueror',
+        '@mobile@i' => 'Handheld Browser',
+        '@UCBrowser|UCWEB@i' => 'UC Browser'
+    ];
+    foreach ($browser_arr as $regex => $value) {
+
+        if (preg_match_all($regex, get_all_headers()['User-Agent'], $matchs)) {
+            $browser = $value;
+            break;
+        }
+    }
+
+    unset($browser_arr, $regex, $value);
+    return $browser;
+}
+
+/*
+ * Get OS
+ */
+
+function usr_os() {
+    $os = 'Other';
+    $os_arr = [
+        '@windows nt 10@i' => 'Windows 10',
+        '@windows nt 6.3@i' => 'Windows 8.1',
+        '@windows nt 6.2@i' => 'Windows 8',
+        '@windows nt 6.1@i' => 'Windows 7',
+        '@windows nt 6.0@i' => 'Windows Vista',
+        '@windows nt 5.2@i' => 'Windows Server 2003/XP x64',
+        '@windows nt 5.1@i' => 'Windows XP',
+        '@windows xp@i' => 'Windows XP',
+        '@windows nt 5.0@i' => 'Windows 2000',
+        '@windows me@i' => 'Windows ME',
+        '@win98@i' => 'Windows 98',
+        '@win95@i' => 'Windows 95',
+        '@win16@i' => 'Windows 3.11',
+        '@macintosh|mac os x@i' => 'Mac OS X',
+        '@mac_powerpc@i' => 'Mac OS 9',
+        '@ubuntu@i' => 'Ubuntu',
+        '@Red Hat@i' => 'Red Hat',
+        '@linux@i' => 'Linux',
+        '@iphone@i' => 'iPhone',
+        '@ipod@i' => 'iPod',
+        '@ipad@i' => 'iPad',
+        '@android@i' => 'Android',
+        '@blackberry@i' => 'BlackBerry',
+        '@webos@i' => 'Mobile'
+    ];
+    foreach ($os_arr as $regex => $value) {
+
+        if (preg_match($regex, get_all_headers()['User-Agent'])) {
+            $os = $value;
+            break;
+        }
+    }
+
+    unset($os_arr, $regex, $value);
+    return $os;
 }

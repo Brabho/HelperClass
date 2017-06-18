@@ -1,5 +1,12 @@
 # Change Log & History
 
+#### 18-06-2017
+    Stable Version 2.3
+    Stability Improved
+    Bugs Fixed
+
+    All Removed Files/Functions are in helpers.php or Completely Removed
+
 #### 22-05-2017
     Stable Version 2.2
     Bugs Fixed

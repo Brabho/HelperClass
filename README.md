@@ -10,12 +10,12 @@ Lightweight, Fast, Useful.
 ### Tested
 PHP    (5.5, 5.6, 7.0, 7.1)
 
+Nginx  (1.9, 1.10, 1.12)
+
 Apache (2.2, 2.4)
 
-Nginx  (1.9, 1.10)
-
 ### Version
-Stable Version 2.2
+Stable Version 2.3
 
 ### License
 (C) 2013 - 2017 under GNU General Public License Version 2.
@@ -40,7 +40,7 @@ class myClass extends upload {
             $this->save = '/save/path';
             $this->min_size = '10';         // in byets
             $this->max_size = '2097152';    // in byets
-            $this->multi = true;            // for multi files upload
+            $this->multi = $i;              // for multi files upload (Loop Value)
             $this->overwrite;               // true/false
             $this->space;                   // space replace with character e.g. '-'
             $this->mime;                    // mime type has to be array e.g. [image/jpeg]

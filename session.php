@@ -58,7 +58,7 @@ class session {
      * Remove All Sessions
      */
 
-    public function removeAll() {
+    public function remove_all() {
         $this->start();
         $_SESSION = [];
         if (ini_get("session.use_cookies")) {

@@ -39,8 +39,9 @@ class ftp {
 
         if ($this->conn) {
             return $this->conn;
+        } else {
+            return false;
         }
-        return false;
     }
 
     /*
@@ -81,7 +82,7 @@ class ftp {
      * Files and Folder List
      */
 
-    public function lst($path = '/') {
+    public function list($path = '/') {
         ftp_pasv($this->conn, true);
         return ftp_rawlist($this->conn, $path);
     }

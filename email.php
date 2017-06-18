@@ -1,8 +1,7 @@
 <?php
 
 /*
- * Mail Function
- * Email Class
+ * Email Class Function
  */
 
 class email {
@@ -10,42 +9,22 @@ class email {
     private $status;
     private $to;
     private $header;
-
-    /*
-     * Email Subject
-     */
+    public $html;
+    public $charset;
     public $subject;
-
-    /*
-     * Email Body/Message
-     */
     public $message;
 
-    function __construct($arr = []) {
+    function __construct() {
 
         $this->status = [];
         $this->status[0] = 'success';
+
+        $this->header = '';
+        $this->html = true;
+        $this->charset = 'UTF-8';
+
         $this->subject = 'No Subject';
         $this->message = '';
-        $this->header = '';
-
-        if (!array_key_exists('charset', $arr)) {
-            $arr['charset'] = 'utf-8';
-        }
-
-        if (isset($arr['html']) && $arr['html'] === true) {
-            $this->header .= "MIME-Version: 1.0\r\n";
-            $this->header .= "Content-type:text/html;charset=" . $arr['charset'] . "\r\n";
-            $this->header .= "X-Mailer: PHP- " . phpversion() . "\r\n";
-        }
-
-        if (isset($arr['attachment']) && $arr['attachment'] === true) {
-            $php_mixed = hash('sha384', microtime(true));
-            $this->header .= "Content-Type: multipart/mixed; boundary=\"PHP-mixed-" . $php_mixed . "\"\r\n";
-            $this->header .= "Content-Transfer-Encoding: 7bit\r\n";
-            $this->header .= "This is a multi-part message in message in MIME format.\r\n";
-        }
-        unset($arr, $php_mixed);
     }
 
     /*
@@ -65,16 +44,19 @@ class email {
      * Email From
      */
 
-    public function from($from, $name = null) {
+    public function from($from, $name = null, $reply_to = null) {
         if ($this->email_valid($from)) {
             if (isset($name)) {
                 $this->header .= "From: " . $name . " <" . $from . ">\r\n";
             } else {
                 $this->header .= "From: " . $from . "\r\n";
             }
+            if (isset($reply_to)) {
+                $this->header .= "Reply-To: " . $reply_to . "\r\n";
+            }
         } else {
             $this->status[0] = 'fail';
-            $this->status['reason'] = 'not_valid_from';
+            $this->status['reason'] = 'invalid_from';
         }
     }
 
@@ -92,12 +74,11 @@ class email {
                     $tomail[] = $mailto;
                 } else {
                     $this->status[0] = 'fail';
-                    $this->status['reason'] = 'not_valid_to';
+                    $this->status['reason'] = 'invalid_to';
                     break;
                 }
             }
             $this->to = trim(implode(', ', $tomail), ',');
-            unset($to, $tomail, $mailto);
         }
     }
 
@@ -115,12 +96,11 @@ class email {
                     $tomail[] = $mailto;
                 } else {
                     $this->status[0] = 'fail';
-                    $this->status['reason'] = 'not_valid_cc';
+                    $this->status['reason'] = 'invalid_cc';
                     break;
                 }
             }
             $this->header .= "Cc: " . trim(implode(', ', $ccmail), ',') . "\r\n";
-            unset($cc, $tomail, $mailto);
         }
     }
 
@@ -133,12 +113,17 @@ class email {
             if (!isset($file_name)) {
                 $file_name = ucwords(basename($file));
             }
+
+            $php_mixed = hash('sha384', microtime(true));
+            $this->header .= "Content-Type: multipart/mixed; boundary=\"PHP-mixed-" . $php_mixed . "\"\r\n";
+            $this->header .= "Content-Transfer-Encoding: 7bit\r\n";
+            $this->header .= "This is a multi-part message in message in MIME format.\r\n";
+
             $content = chunk_split(base64_encode(file_get_contents($file)));
             $this->header .= "Content-Type: " . get_mime($file) . "; name=\"" . $file_name . "\"\r\n";
             $this->header .= "Content-Transfer-Encoding: base64\r\n";
             $this->header .= "Content-Disposition: attachment; filename=\"" . $file_name . "\"\r\n";
             $this->header .= $content . "\r\n";
-            unset($file, $file_name, $content);
         }
     }
 
@@ -148,6 +133,13 @@ class email {
 
     public function send() {
         if ($this->status[0] === 'success') {
+
+            if ($this->html === true) {
+                $this->header .= "MIME-Version: 1.0\r\n";
+                $this->header .= "Content-type: text/html;charset=" . $this->charset . "\r\n";
+                $this->header .= "X-Mailer: PHP- " . phpversion() . "\r\n";
+            }
+
             if (!mail($this->to, $this->subject, $this->message, $this->header)) {
                 $this->status[0] = 'fail';
                 $this->status['reason'] = 'mail_function';

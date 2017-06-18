@@ -49,7 +49,7 @@ class cookie {
      * Remove All Cookies
      */
 
-    public function removeAll($path = '/') {
+    public function remove_all($path = '/') {
         foreach ($_COOKIE as $cookie => $c_val) {
             setcookie($cookie, '0', time() - 86400, $path);
         }
