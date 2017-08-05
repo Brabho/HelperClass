@@ -41,31 +41,18 @@ class email {
     }
 
     /*
-     * Email From
-     */
-
-    public function from($from, $name = null, $reply_to = null) {
-        if ($this->email_valid($from)) {
-            if (isset($name)) {
-                $this->header .= "From: " . $name . " <" . $from . ">\r\n";
-            } else {
-                $this->header .= "From: " . $from . "\r\n";
-            }
-            if (isset($reply_to)) {
-                $this->header .= "Reply-To: " . $reply_to . "\r\n";
-            }
-        } else {
-            $this->status[0] = 'fail';
-            $this->status['reason'] = 'invalid_from';
-        }
-    }
-
-    /*
      * Email To
      */
 
     public function to($to) {
         if ($this->status[0] === 'success') {
+
+            if ($this->html === true) {
+                $this->header .= "MIME-Version: 1.0\r\n";
+                $this->header .= "Content-type: text/html;charset=" . $this->charset . "\r\n";
+                $this->header .= "X-Mailer: PHP- " . phpversion() . "\r\n";
+            }
+
             $to = trim(preg_replace('/\s/', '', $to), ',');
             $to = explode(',', $to);
             $tomail = [];
@@ -79,6 +66,28 @@ class email {
                 }
             }
             $this->to = trim(implode(', ', $tomail), ',');
+        }
+    }
+
+    /*
+     * Email From
+     */
+
+    public function from($from, $name = null, $reply_to = null) {
+        if ($this->status[0] === 'success') {
+            if ($this->email_valid($from)) {
+                if (isset($name)) {
+                    $this->header .= "From: " . $name . " <" . $from . ">\r\n";
+                } else {
+                    $this->header .= "From: " . $from . "\r\n";
+                }
+                if (isset($reply_to)) {
+                    $this->header .= "Reply-To: " . $reply_to . "\r\n";
+                }
+            } else {
+                $this->status[0] = 'fail';
+                $this->status['reason'] = 'invalid_from';
+            }
         }
     }
 
@@ -133,12 +142,6 @@ class email {
 
     public function send() {
         if ($this->status[0] === 'success') {
-
-            if ($this->html === true) {
-                $this->header .= "MIME-Version: 1.0\r\n";
-                $this->header .= "Content-type: text/html;charset=" . $this->charset . "\r\n";
-                $this->header .= "X-Mailer: PHP- " . phpversion() . "\r\n";
-            }
 
             if (!mail($this->to, $this->subject, $this->message, $this->header)) {
                 $this->status[0] = 'fail';

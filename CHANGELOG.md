@@ -1,5 +1,20 @@
 # Change Log & History
 
+#### 05-08-2017
+    Stable Version 2.4
+
+    Added:
+        `url2img`           > image.php
+
+    Improved:
+        Stability
+        Minify
+        DOM Load
+
+    Bugs Fixed:
+        `dom_metatags`      > helpers.php
+        image.php
+
 #### 18-06-2017
     Stable Version 2.3
     Stability Improved

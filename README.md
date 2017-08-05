@@ -15,7 +15,7 @@ Nginx  (1.9, 1.10, 1.12)
 Apache (2.2, 2.4)
 
 ### Version
-Stable Version 2.3
+Stable Version 2.4
 
 ### License
 (C) 2013 - 2017 under GNU General Public License Version 2.

@@ -82,7 +82,7 @@ class ftp {
      * Files and Folder List
      */
 
-    public function list($path = '/') {
+    public function f_list($path = '/') {
         ftp_pasv($this->conn, true);
         return ftp_rawlist($this->conn, $path);
     }

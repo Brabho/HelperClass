@@ -44,9 +44,10 @@ class upload {
 
     private function mime($file) {
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
-        return finfo_file($finfo, $file);
+        $mime = finfo_file($finfo, $file);
         finfo_close($finfo);
         unset($file, $finfo);
+        return $mime;
     }
 
     private function check1() {

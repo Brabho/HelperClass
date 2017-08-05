@@ -9,7 +9,7 @@ class image {
     private $status;
     private $mime;
 
-    function __construct($arr = []) {
+    function __construct() {
 
         $this->status = [];
         $this->mime = [
@@ -83,7 +83,7 @@ class image {
                  */
 
                 case ($this->status['details']['mime'] === 'image/jpeg' && $to === 'jpeg'):
-                    $image_obj = imagecreatefromjpeg($this->status['file']);
+                    $image_obj = imagecreatefromjpeg($this->status['saved']);
                     imagejpeg($image_obj, $this->real_path($file) . '.jpeg');
                     $this->status['saved'] = $this->real_path($file) . '.jpeg';
                     $this->status['covert_job'] = 'jpeg_jpeg';
@@ -93,7 +93,7 @@ class image {
                     break;
 
                 case ($this->status['details']['mime'] === 'image/jpeg' && $to === 'png'):
-                    $image_obj = imagecreatefromjpeg($this->status['file']);
+                    $image_obj = imagecreatefromjpeg($this->status['saved']);
                     imagepng($image_obj, $this->real_path($file) . '.png');
                     $this->status['saved'] = $this->real_path($file) . '.png';
                     $this->status['covert_job'] = 'jpeg_png';
@@ -102,7 +102,7 @@ class image {
                     break;
 
                 case($this->status['details']['mime'] === 'image/jpeg' && $to === 'gif'):
-                    $image_obj = imagecreatefromjpeg($this->status['file']);
+                    $image_obj = imagecreatefromjpeg($this->status['saved']);
                     imagegif($image_obj, $this->real_path($file) . '.gif');
                     $this->status['saved'] = $this->real_path($file) . '.gif';
                     $this->status['covert_job'] = 'jpeg_gif';
@@ -115,7 +115,7 @@ class image {
                  */
 
                 case ($this->status['details']['mime'] === 'image/png' && $to === 'png'):
-                    $image_obj = imagecreatefrompng($this->status['file']);
+                    $image_obj = imagecreatefrompng($this->status['saved']);
                     imagepng($image_obj, $this->real_path($file) . '.png');
                     $this->status['saved'] = $this->real_path($file) . '.png';
                     $this->status['covert_job'] = 'png_png';
@@ -124,7 +124,7 @@ class image {
                     break;
 
                 case ($this->status['details']['mime'] === 'image/png' && $to === 'jpeg'):
-                    $image_obj = imagecreatefrompng($this->status['file']);
+                    $image_obj = imagecreatefrompng($this->status['saved']);
 
                     $output = imagecreatetruecolor($this->status['details'][0], $this->status['details'][1]);
                     $white = imagecolorallocate($output, 255, 255, 255);
@@ -139,7 +139,7 @@ class image {
                     break;
 
                 case ($this->status['details']['mime'] === 'image/png' && $to === 'gif'):
-                    $image_obj = imagecreatefrompng($this->status['file']);
+                    $image_obj = imagecreatefrompng($this->status['saved']);
                     imagegif($image_obj, $this->real_path($file) . '.gif');
                     $this->status['saved'] = $this->real_path($file) . '.gif';
                     $this->status['covert_job'] = 'png_gif';
@@ -152,7 +152,7 @@ class image {
                  */
 
                 case ($this->status['details']['mime'] === 'image/gif' && $to === 'gif'):
-                    $image_obj = imagecreatefromgif($this->status['file']);
+                    $image_obj = imagecreatefromgif($this->status['saved']);
                     imagegif($image_obj, $this->real_path($file) . '.gif');
                     $this->status['saved'] = $this->real_path($file) . '.gif';
                     $this->status['covert_job'] = 'gif_gif';
@@ -161,7 +161,7 @@ class image {
                     break;
 
                 case ($this->status['details']['mime'] === 'image/gif' && $to === 'jpeg'):
-                    $image_obj = imagecreatefromgif($this->status['file']);
+                    $image_obj = imagecreatefromgif($this->status['saved']);
                     imagegif($image_obj, $this->real_path($file) . '.jpeg');
                     $this->status['saved'] = $this->real_path($file) . '.jpeg';
                     $this->status['covert_job'] = 'gif_jpeg';
@@ -170,7 +170,7 @@ class image {
                     break;
 
                 case ($this->status['details']['mime'] === 'image/gif' && $to === 'png'):
-                    $image_obj = imagecreatefromgif($this->status['file']);
+                    $image_obj = imagecreatefromgif($this->status['saved']);
                     imagegif($image_obj, $this->real_path($file) . '.png');
                     $this->status['saved'] = $this->real_path($file) . '.png';
                     $this->status['covert_job'] = 'gif_png';
@@ -301,7 +301,33 @@ class image {
     }
 
     /*
+     * Copy image from URL
+     */
+
+    public function url2img($link, $des, $mime = null) {
+        if (isset($mime) && is_array($mime)) {
+            $this->mime = $mime;
+        }
+
+        $headers = get_headers($link, 1);
+
+        if (isset($headers["Content-Type"]) && in_array($headers["Content-Type"], $this->mime)) {
+
+            $ext = explode('.', $link);
+            $this->status['file'] = $des . '.' . end($ext);
+            $this->status['saved'] = $this->status['file'];
+            file_put_contents($this->status['file'], file_get_contents($link));
+        } else {
+
+            $this->status[0] = 'fail';
+            $this->status['reason'] = 'wrong_mime';
+        }
+        return $this->status;
+    }
+
+    /*
      * All in One
+     * Not Copy image from URL *
      */
 
     public function save($arr = []) {
@@ -310,7 +336,18 @@ class image {
             $this->mime = $arr['mime'];
         }
 
+        if (array_key_exists('url2img', $arr)) {
+            $this->url2img($arr['url2img']['link'], $arr['url2img']['des']);
+
+            if ($this->status[0] === 'fail') {
+                return $this->status;
+            }
+
+            $arr['file'] = $this->status['file'];
+        }
+
         $this->check($arr['file'], $this->mime);
+
         if ($this->status[0] !== 'fail') {
 
             if (array_key_exists('convert', $arr)) {
@@ -335,10 +372,10 @@ class image {
 
             $new_save = $arr['save'] . '/' . $arr['name'] . $this->status['extn'];
             rename($this->status['saved'], $new_save);
+            $this->status['file'] = $arr['file'];
             $this->status['saved'] = $new_save;
         }
 
-        unset($arr, $new_save);
         return $this->status;
     }
 

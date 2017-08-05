@@ -8,7 +8,7 @@
  */
 
 function is_var(&$var) {
-    return (isset($var) && $var !== null && $var !== '' && !empty($var) && strlen(trim($var)) > 0);
+    return (isset($var) && $var !== null && $var !== '' && !empty($var) && strlen(trims($var)) > 0);
 }
 
 /*
@@ -157,8 +157,8 @@ function cp_dir($src, $dest) {
         mkdir($dest);
     }
     foreach (scandir($src) as $file) {
-        $srcfile = trim($src, '/') . '/' . $file;
-        $destfile = trim($dest, '/') . '/' . $file;
+        $srcfile = trims($src, '/') . '/' . $file;
+        $destfile = trims($dest, '/') . '/' . $file;
         if (!is_readable($srcfile)) {
             continue;
         } if ($file != '.' && $file != '..') {
@@ -219,6 +219,7 @@ function mime_type($file) {
     $finfo = finfo_open(FILEINFO_MIME_TYPE);
     $info = finfo_file($finfo, $file);
     finfo_close($finfo);
+    unset($finfo, $file);
     return $info;
 }
 
@@ -240,7 +241,7 @@ function uri_info($link) {
  */
 
 function slug($text, $case = null, $charset = 'utf-8') {
-    $text = htmlentities($text, ENT_NOQUOTES, $charset);
+    $text = htmlspecialchars($text, ENT_NOQUOTES, $charset);
     $text = preg_replace('~&([A-za-z])(?:acute|cedil|caron|circ|grave|orn|ring|slash|th|tilde|uml);~', '\1', $text);
     $text = preg_replace('~&([A-za-z]{2})(?:lig);~', '\1', $text);
     $text = preg_replace('~&[^;]+;~', '', $text);
@@ -272,7 +273,7 @@ function by_ptn($subject, $count = 'all', $pattern = null, $by = 'email') {
                 $pattern = '/<img.+src=[\'"]([^\'"]+)[\'"].*>/i';
                 break;
 
-            case 'link':
+            case 'url':
                 $pattern = '/(http|https|ftp|ftps)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/i';
                 break;
         }
@@ -297,6 +298,12 @@ function by_ptn($subject, $count = 'all', $pattern = null, $by = 'email') {
  */
 
 function encrypt($val, $arr = []) {
+    if (!isset($arr['p'])) {
+        $arr['p'] = 'PrimaryKey1';
+    }
+    if (!isset($arr['s'])) {
+        $arr['s'] = 'SecondaryKey2';
+    }
     $key = hash('sha256', $arr['p'] . $arr['s']);
     $val = $arr['p'] . $val . $arr['p'];
     $val = serialize(str_rot13($val));
@@ -314,7 +321,12 @@ function encrypt($val, $arr = []) {
  */
 
 function decrypt($val, $arr = []) {
-
+    if (!isset($arr['p'])) {
+        $arr['p'] = 'PrimaryKey1';
+    }
+    if (!isset($arr['s'])) {
+        $arr['s'] = 'SecondaryKey2';
+    }
     $key = hash('sha256', $arr['p'] . $arr['s']);
     $val = explode('|', $val . '|');
     $deco = base64_decode($val[0]);
@@ -322,7 +334,7 @@ function decrypt($val, $arr = []) {
 
     if (strlen($iv) === mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_CBC)) {
         $key = pack('H*', $key);
-        $decry = trim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $key, $deco, MCRYPT_MODE_CBC, $iv));
+        $decry = trims(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $key, $deco, MCRYPT_MODE_CBC, $iv));
         $mac = substr($decry, -64);
         $decry = substr($decry, 0, -64);
         $cmac = hash_hmac('sha256', $decry, substr(bin2hex($key), -32));
@@ -490,7 +502,11 @@ function re_name($path, $nam) {
  * Mod Trim
  */
 
-function trims($content, $delmi = " \t\n\r\0\x0B", $white = null) {
+function trims($content, $delmi = null, $white = null) {
+    if (!isset($delmi)) {
+        $delmi = " \t\n\r\0\x0B";
+    }
+
     $content = trim($content, $delmi);
     $content = ltrim($content, $delmi);
     $content = rtrim($content, $delmi);
@@ -507,7 +523,7 @@ function trims($content, $delmi = " \t\n\r\0\x0B", $white = null) {
  */
 
 function mod_strip_tags($text, $tags = '', $invert = false) {
-    preg_match_all('/<(.+?)[\s]*\/?[\s]*>/si', trim($tags), $tags);
+    preg_match_all('/<(.+?)[\s]*\/?[\s]*>/si', trims($tags), $tags);
     $tags = array_unique($tags[1]);
     if (is_array($tags) && count($tags) > 0) {
         if ($invert == false) {
@@ -593,15 +609,15 @@ function zip_extract($source, $destiny) {
 function valid_alpha($alpha, $let = 'all') {
     switch ($let) {
         case 'all':
-            return (preg_match_all('/^[a-zA-Z]+$/i', $alpha)) ? TRUE : FALSE;
+            return (preg_match_all('/^[a-zA-Z]+$/i', $alpha));
             break;
 
         case 'low':
-            return (preg_match_all('/^[a-z]+$/', $alpha)) ? TRUE : FALSE;
+            return (preg_match_all('/^[a-z]+$/', $alpha));
             break;
 
         case 'up':
-            return (preg_match_all('/^[A-Z]+$/', $alpha)) ? TRUE : FALSE;
+            return (preg_match_all('/^[A-Z]+$/', $alpha));
             break;
     }
 }
@@ -669,10 +685,31 @@ function get_all_headers() {
  * Load DOM Document
  */
 
-function dom_load($html) {
+function dom_load($html, $arr = []) {
     ob_start();
     ob_end_clean();
-    $dom = new DOMDocument();
+
+    if (!isset($arr['version'])) {
+        $arr['version'] = null;
+    }
+    if (!isset($arr['charset'])) {
+        $arr['charset'] = null;
+    }
+
+    $dom = new DOMDocument($arr['version'], $arr['charset']);
+
+    if (isset($arr['white'])) {
+        $dom->preserveWhiteSpace = $arr['white'];
+    }
+
+    if (isset($arr['format'])) {
+        $dom->formatOutput = $arr['format'];
+    }
+
+    if (isset($arr['charset'])) {
+        mb_convert_encoding($html, 'HTML-ENTITIES', $arr['charset']);
+    }
+
     libxml_use_internal_errors(true);
     $dom->strictErrorChecking = FALSE;
 
@@ -689,7 +726,7 @@ function dom_load($html) {
 
 function dom_metatags($html) {
     $metaTags = get_meta_tags($html);
-    if ($load = dom_load($html)) {
+    if ($load = dom_load(file_get_contents($html))) {
 
         $title = $load->getElementsByTagName('title');
         $metaTags['title'] = $title->item(0)->nodeValue;
@@ -918,14 +955,14 @@ function format_bits($the_size) {
 
 function xtml_min($content) {
     $search = [
-        '/\>[^\S ]+|> |>  |>   /si',
-        '/[^\S ]+\<| <|  <|   </si',
+        '/\r\n|\r|\n|\t|<!--(.*?)-->/si',
+        '/\>[^\S ]+|> |>  |>   |\s+>/si',
+        '/[^\S ]+\<| <|  <|   <|<\s+/si',
         '/(\s)+/si',
-        "/\r\n|\r|\n|\t|<!--(.*?)-->/si"
     ];
-    $replace = ['> ', ' <', '\\1', ''];
+    $replace = ['', '> ', ' <', '\\1'];
     $content = preg_replace($search, $replace, $content);
-    return $content;
+    return trims($content);
 }
 
 /*
@@ -942,7 +979,7 @@ function css_min($css) {
     $search = ['/ {/s', '/ }/s', '/ :|: /s', '/ ,|, /s'];
     $replace = ['{', '}', ':', ','];
     $css = preg_replace($search, $replace, $css);
-    $css = trim($css, "\t\n\r\0\x0B");
+    $css = trims($css);
     return $css;
 }
 
@@ -957,7 +994,7 @@ function script_min($script) {
     ];
 
     $script = preg_replace($search, '', $script);
-    $script = trim($script, "\t\n\r\0\x0B");
+    $script = trims($script);
     return $script;
 }
 
@@ -968,7 +1005,7 @@ function script_min($script) {
 function json_min($json) {
     $search = ['/[\p{Z}\s]{2,}/u'];
     $json = preg_replace($search, '', $json);
-    $json = trim($json, "\t\n\r\0\x0B");
+    $json = trims($json);
     return $json;
 }
 
@@ -1044,7 +1081,7 @@ function usr_browser() {
 }
 
 /*
- * Get OS
+ * Get User OS
  */
 
 function usr_os() {
@@ -1085,4 +1122,22 @@ function usr_os() {
 
     unset($os_arr, $regex, $value);
     return $os;
+}
+
+/*
+ * User GEO Location
+ * API: geoplugin, ipinfo
+ */
+
+function usr_location($geo_api = 'geoplugin') {
+    switch ($geo_api) {
+        case 'geoplugin':
+            $location = unserialize(file_get_contents('http://www.geoplugin.net/php.gp?ip=' . usr_ip()));
+            break;
+
+        case 'ipinfo':
+            $location = json_decode(file_get_contents('http://ipinfo.io/' . usr_ip()), TRUE);
+            break;
+    }
+    return $location;
 }
