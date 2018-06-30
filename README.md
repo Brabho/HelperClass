@@ -1,25 +1,32 @@
 # HelperClass
 
-### Description
+
+
+> **_Description_**
 PHP Helper Class & Function.
 
 Most used Classes and Functions.
 
 Lightweight, Fast, Useful.
 
-### Tested
+
+
+> **_Build_**
+- Version: **2.5**
+- Status: **Stable**
+
+
+
+> **_Tested_**
 PHP    (5.5, 5.6, 7.0, 7.1, 7.2)
 
-Nginx  (1.9, 1.10, 1.12)
+Nginx  (1.9, 1.10, 1.12, 1.14)
 
 Apache (2.2, 2.4)
 
-### Version
-Stable Version 2.5
 
-### License
-(C) 2013 - 2017 under GNU General Public License Version 2.
 
+> **_Example_**
 ### Example
 ```php
 require "helpers.php";
@@ -104,3 +111,7 @@ function($ch) {
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 0);
 }
 ```
+
+
+
+> **_License (C) 2013 - 2018 under GNU GPL V2._**
