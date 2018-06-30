@@ -3,6 +3,7 @@
 
 
 > **_Description_**
+
 PHP Helper Class & Function.
 
 Most used Classes and Functions.
@@ -28,7 +29,6 @@ Apache (2.2, 2.4)
 
 
 > **_Example_**
-### Example
 ```php
 require "helpers.php";
 echo (is_var($var)) ? 'exists' : 'not exists';
