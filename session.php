@@ -76,7 +76,7 @@ class session {
     public function destroy() {
         $this->start();
         session_regenerate_id(true);
-        $this->removeAll();
+        $this->remove_all();
         session_destroy();
     }
 

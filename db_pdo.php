@@ -61,6 +61,35 @@ class db_pdo {
     }
 
     /*
+     * Table Exists (Bool)
+     */
+
+    public function table_exists($tablename) {
+        if ($this->ping(null)) {
+            $tablename = preg_replace('/[^a-zA-Z0-9_]/', '', $tablename);
+            try {
+                $check = $this->contodb->query("SELECT 1 FROM $tablename LIMIT 1");
+            } catch (Exception $e) {
+                return false;
+            }
+            return $check !== false;
+        }
+    }
+
+    /*
+     * Search & Replace
+     */
+
+    public function snr($table, $column, $search, $replace) {
+        if ($this->ping(null)) {
+            $this->contodb->query("UPDATE $table 
+                SET $column = 
+                REPLACE ($column, '$search', '$replace')");
+        }
+        unset($table, $column, $search, $replace);
+    }
+
+    /*
      * Query, Bind, Execute, Result
      */
 
@@ -97,35 +126,6 @@ class db_pdo {
             return (isset($result)) ? $result : $dbh;
         }
         unset($query, $bind, $arr, $result, $dbh, $arrKeys);
-    }
-
-    /*
-     * Table Exists (Bool)
-     */
-
-    public function table_exists($tablename) {
-        if ($this->ping(null)) {
-            $tablename = preg_replace('/[^a-zA-Z0-9_]/', '', $tablename);
-            try {
-                $check = $this->contodb->query("SELECT 1 FROM $tablename LIMIT 1");
-            } catch (Exception $e) {
-                return false;
-            }
-            return $check !== false;
-        }
-    }
-
-    /*
-     * Search & Replace
-     */
-
-    public function snr($table, $column, $search, $replace) {
-        if ($this->ping(null)) {
-            $this->contodb->query("UPDATE $table 
-                SET $column = 
-                REPLACE ($column, '$search', '$replace')");
-        }
-        unset($table, $column, $search, $replace);
     }
 
     /*

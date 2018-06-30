@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Helper Class 
+ * Helper Class
  * Custom & Mod Functions
 
  * Isset Variable
@@ -29,6 +29,55 @@ function is_json($str) {
 }
 
 /*
+ * Reverse of `nl2br`
+ */
+
+function br2nl($str) {
+    $str = preg_replace('@<br/>|<br />|<br>@i', "\r\n", $str);
+    return trims($str);
+}
+
+/*
+ * Virus / Malware Check
+ * Based on ClamAV
+ * Require ClamAV Installed *
+ */
+
+function virus_check($path, $arr = []) {
+    $path = escapeshellarg($path);
+
+    if (!isset($arr['options'])) {
+        $arr['options'] = '-r -a -z';
+    }
+
+    if (isset($arr['remove']) && $arr['remove'] === true) {
+        $arr['options'] .= ' --remove';
+    }
+
+    $result = [];
+    $output = '';
+    $int = -1;
+
+    exec('clamscan ' . $arr['options'] . ' ' . $path, $output, $int);
+
+    $result['$int'] = $int;
+
+    $count = count($output) - 1;
+    $count_to = (int) $count - 8;
+    for ($i = $count; $i > $count_to; $i--) {
+        if (preg_match('@Infected files: @i', $output[$i])) {
+            $result['virus'] = (int) preg_replace('@[^0-9]@i', '', $output[$i]);
+            break;
+        }
+    }
+
+    $result['output'] = $output;
+
+    unset($path, $arr, $output, $int);
+    return $result;
+}
+
+/*
  * Get if Request by ajax (Return Bool)
  */
 
@@ -45,12 +94,12 @@ function is_ajax() {
  * Redirect
  */
 
-function redirect($link, $refresh = '') {
+function redirect($link, $refresh = false) {
     ob_start();
     while (ob_get_contents()) {
         ob_end_clean();
     }
-    if (strlen($refresh) > 0 && is_numeric($refresh)) {
+    if ($refresh && is_numeric($refresh)) {
         header('Refresh: ' . $refresh . '; url=' . $link);
     } else {
         header('Location: ' . $link);
@@ -63,7 +112,7 @@ function redirect($link, $refresh = '') {
  */
 
 function local_date($timezone = null, $time = null, $ptrn = 'd-m-Y h:i:sa') {
-    if (isset($timezone) && function_exists('date_default_timezone_set')) {
+    if (isset($timezone)) {
         date_default_timezone_set($timezone);
     }
     if (!isset($time)) {
@@ -149,7 +198,7 @@ function mk_dir($path) {
 }
 
 /*
- * Copy Directory 
+ * Copy Directory
  */
 
 function cp_dir($src, $dest) {
@@ -174,7 +223,7 @@ function cp_dir($src, $dest) {
 }
 
 /*
- * Delete Directory 
+ * Delete Directory
  */
 
 function del_dir($dir) {
@@ -195,7 +244,7 @@ function del_dir($dir) {
 }
 
 /*
- * Directory Size 
+ * Directory Size
  */
 
 function dir_size($dir) {
@@ -230,8 +279,9 @@ function mime_type($file) {
 function uri_info($link) {
     $allarr = parse_url($link);
     $domain = (!array_key_exists('host', $allarr)) ? $allarr['path'] : $allarr['host'];
-
-    $allarr['query'] = explode('&', $allarr['query']);
+    if (is_var($allarr['query'])) {
+        $allarr['query'] = explode('&', $allarr['query']);
+    }
     $allarr['ip'] = gethostbyname($domain);
     return $allarr;
 }
@@ -259,7 +309,7 @@ function slug($text, $case = null, $charset = 'utf-8') {
 }
 
 /*
- * Get Email, Image, Link By Regex
+ * Get Email, Phone, Image, Link/URI By Regex
  */
 
 function by_ptn($subject, $count = 'all', $pattern = null, $by = 'email') {
@@ -267,6 +317,10 @@ function by_ptn($subject, $count = 'all', $pattern = null, $by = 'email') {
         switch ($by) {
             case 'email':
                 $pattern = '/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/i';
+                break;
+
+            case 'phone':
+                $pattern = '/(\d{3}\s*-?\s*\d{3}\s*-?\s*\d{4})/i';
                 break;
 
             case 'img':
@@ -295,14 +349,16 @@ function by_ptn($subject, $count = 'all', $pattern = null, $by = 'email') {
 
 /*
  * Encrypt Value
+ * arr['p'] = PrimaryKey
+ * arr['s'] = SecondaryKey
  */
 
 function encrypt($val, $arr = []) {
     if (!isset($arr['p'])) {
-        $arr['p'] = 'PrimaryKey1';
+        $arr['p'] = 'PrimaryKey';
     }
     if (!isset($arr['s'])) {
-        $arr['s'] = 'SecondaryKey2';
+        $arr['s'] = 'SecondaryKey';
     }
     $key = hash('sha256', $arr['p'] . $arr['s']);
     $val = $arr['p'] . $val . $arr['p'];
@@ -318,14 +374,16 @@ function encrypt($val, $arr = []) {
 
 /*
  * Decrypt Value
+ * arr['p'] = PrimaryKey
+ * arr['s'] = SecondaryKey
  */
 
 function decrypt($val, $arr = []) {
     if (!isset($arr['p'])) {
-        $arr['p'] = 'PrimaryKey1';
+        $arr['p'] = 'PrimaryKey';
     }
     if (!isset($arr['s'])) {
-        $arr['s'] = 'SecondaryKey2';
+        $arr['s'] = 'SecondaryKey';
     }
     $key = hash('sha256', $arr['p'] . $arr['s']);
     $val = explode('|', $val . '|');
@@ -391,10 +449,20 @@ function rand_crypt($bit = 128) {
 }
 
 /*
+ * Random Characters
+ */
+
+function rand_char($length = 40) {
+    $chars = '!@#$%&*-_=';
+    $rand_str = str_shuffle(rand_str(30) . $chars);
+    return substr($rand_str, 0, $length);
+}
+
+/*
  * Request Per Second
  */
 
-function req_sec($exp = '3') {
+function req_ps($exp = '3') {
 
     if ((array_key_exists('HTTPS', $_SERVER) && ($_SERVER['HTTPS'] === 'on' || $_SERVER['HTTPS'] === 1)) ||
             (array_key_exists('HTTP_X_FORWARDED_PROTO', $_SERVER) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')) {
@@ -404,14 +472,14 @@ function req_sec($exp = '3') {
         $protocol = 'http://';
     }
 
-    $uri = hash('sha384', $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
+    $uri = hash('sha512', $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
     $comp = $uri . '|' . time();
 
-    if (!isset($_SESSION['req_sec'])) {
-        $_SESSION['req_sec'] = $comp;
+    if (!isset($_SESSION['req_ps'])) {
+        $_SESSION['req_ps'] = $comp;
     }
 
-    list($_uri, $_exp) = explode('|', $_SESSION['req_sec']);
+    list($_uri, $_exp) = explode('|', $_SESSION['req_ps']);
     return ($_uri === $uri && (time() - $_exp < $exp));
 }
 
@@ -631,6 +699,22 @@ function valid_num($num) {
 }
 
 /*
+ * Valid Phone
+ */
+
+function valid_phone($phone) {
+    if (valid_num($phone)) {
+        $phone_nums = by_ptn($phone, 'all', null, 'phone');
+
+        if (array_key_exists(0, $phone_nums)) {
+            return $phone_nums;
+        }
+        return false;
+    }
+    return false;
+}
+
+/*
  * Valid Email
  */
 
@@ -693,7 +777,7 @@ function dom_load($html, $arr = []) {
         $arr['version'] = null;
     }
     if (!isset($arr['charset'])) {
-        $arr['charset'] = null;
+        $arr['charset'] = 'utf-8';
     }
 
     $dom = new DOMDocument($arr['version'], $arr['charset']);
@@ -724,9 +808,14 @@ function dom_load($html, $arr = []) {
  * Get All Meta Tags
  */
 
-function dom_metatags($html) {
-    $metaTags = get_meta_tags($html);
-    if ($load = dom_load(file_get_contents($html))) {
+function dom_metatags($html, $link = null) {
+    $metaTags = [];
+
+    if (isset($link) && valid_url($link)) {
+        $metaTags = get_meta_tags($link);
+    }
+
+    if ($load = dom_load($html)) {
 
         $title = $load->getElementsByTagName('title');
         $metaTags['title'] = $title->item(0)->nodeValue;
@@ -984,7 +1073,7 @@ function css_min($css) {
 }
 
 /*
- * JavaScript, PHP Minify
+ * Script Minify
  */
 
 function script_min($script) {
@@ -1125,18 +1214,31 @@ function usr_os() {
 }
 
 /*
- * User GEO Location
- * API: geoplugin, ipinfo
+ * User GEO Location + Timezone
+ * API: geoplugin || ipinfo
  */
 
-function usr_location($geo_api = 'geoplugin') {
+function usr_location($ip = null, $geo_api = null) {
+
+    if (!isset($geo_api)) {
+        $geo_api = 'geoplugin';
+    }
+
+    if (!isset($ip)) {
+        $ip = usr_ip();
+    }
+
+    $location = [];
+
     switch ($geo_api) {
         case 'geoplugin':
-            $location = unserialize(file_get_contents('http://www.geoplugin.net/php.gp?ip=' . usr_ip()));
+            $location = unserialize(file_get_contents('http://www.geoplugin.net/php.gp?ip=' . $ip));
+            $location['timezone'] = \DateTimeZone::listIdentifiers(\DateTimeZone::PER_COUNTRY, $location['geoplugin_countryCode'])[0];
             break;
 
         case 'ipinfo':
-            $location = json_decode(file_get_contents('http://ipinfo.io/' . usr_ip()), TRUE);
+            $location = json_decode(file_get_contents('http://ipinfo.io/' . $ip), TRUE);
+            $location['timezone'] = \DateTimeZone::listIdentifiers(\DateTimeZone::PER_COUNTRY, $location['country'])[0];
             break;
     }
     return $location;

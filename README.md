@@ -8,14 +8,14 @@ Most used Classes and Functions.
 Lightweight, Fast, Useful.
 
 ### Tested
-PHP    (5.5, 5.6, 7.0, 7.1)
+PHP    (5.5, 5.6, 7.0, 7.1, 7.2)
 
 Nginx  (1.9, 1.10, 1.12)
 
 Apache (2.2, 2.4)
 
 ### Version
-Stable Version 2.4
+Stable Version 2.5
 
 ### License
 (C) 2013 - 2017 under GNU General Public License Version 2.
@@ -25,13 +25,13 @@ Stable Version 2.4
 require "helpers.php";
 echo (is_var($var)) ? 'exists' : 'not exists';
 echo encrypt('text', ['p' => 'PrimaryKey', 's' => 'SecondaryKey']);
-echo rand_str();
+echo rand_str();               				// Default & Max Length 40
 
 ## Upload File(s) Securely
 require "upload.php";
 class myClass extends upload {
     function __construct() {
-        $this->file_name = 'FILE';      // input element name attribute's value
+        $this->file_name = 'FILE';          // input element name attribute's value
         $this->start();
 
         /*

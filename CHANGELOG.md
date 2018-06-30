@@ -1,5 +1,18 @@
 # Change Log & History
 
+#### 30-06-2018
+    Stable Version 2.5
+    Stability Improved
+    Bugs Fixed
+
+    Added:
+	    Support PHP 7.2
+        User Timezone
+        Virus Check
+        SSH SFTP
+        Random Characters 	`rand_char`
+		Extract Phone		`by_ptn`
+
 #### 05-08-2017
     Stable Version 2.4
 
