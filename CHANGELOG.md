@@ -11,6 +11,7 @@
 		encrypt(), decrypt()				"Replace `mcrypt` with 'openssl'. Complete Rewrite. Usage Same"
 
 	Changed:
+		valid_ip(), usr_ip() >> ip_d()		"valid_ip & usr_ip marge with ip_d"
 		mod_strip_tags() >> tags_strip()
 		local_date() >> date_time()
 

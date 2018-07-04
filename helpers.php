@@ -744,14 +744,6 @@ function valid_email($email, $host = false) {
 }
 
 /*
- * IP
- */
-
-function valid_ip($ip) {
-    return (filter_var($ip, FILTER_VALIDATE_IP));
-}
-
-/*
  * URL
  */
 
@@ -1130,24 +1122,45 @@ function usr_referer() {
 
 /*
  * Get User IP
+ * Valid IP
  */
 
-function usr_ip() {
-    if (is_arr($_SERVER, 'HTTP_CLIENT_IP')) {
+function ip_d($uip = false) {
 
-        return htm_en($_SERVER['HTTP_CLIENT_IP']);
-    } elseif (is_arr($_SERVER, 'HTTP_X_FORWARDED_FOR')) {
+    $ip = [];
+    $ip[0] = false;
+    $ip['type'] = false;
 
-        return htm_en($_SERVER['HTTP_X_FORWARDED_FOR']);
-    } elseif (is_arr($_SERVER, 'HTTP_X_REAL_IP')) {
+    if ($uip) {
+        $ip[0] = $uip;
+    } else {
 
-        return htm_en($_SERVER['HTTP_X_REAL_IP']);
-    } elseif (is_arr($_SERVER, 'REMOTE_ADDR')) {
+        if (is_arr($_SERVER, 'HTTP_CLIENT_IP')) {
 
-        return htm_en($_SERVER['REMOTE_ADDR']);
+            $ip[0] = htm_en($_SERVER['HTTP_CLIENT_IP']);
+        } elseif (is_arr($_SERVER, 'HTTP_X_FORWARDED_FOR')) {
+
+            $ip[0] = htm_en($_SERVER['HTTP_X_FORWARDED_FOR']);
+        } elseif (is_arr($_SERVER, 'HTTP_X_REAL_IP')) {
+
+            $ip[0] = htm_en($_SERVER['HTTP_X_REAL_IP']);
+        } elseif (is_arr($_SERVER, 'REMOTE_ADDR')) {
+
+            $ip[0] = htm_en($_SERVER['REMOTE_ADDR']);
+        }
     }
 
-    return false;
+    if ($ip[0]) {
+        if (filter_var($ip[0], FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
+            $ip['type'] = 'ipv4';
+        } elseif (filter_var($ip[0], FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+            $ip['type'] = 'ipv6';
+        } else {
+            $ip[0] = false;
+        }
+    }
+
+    return $ip;
 }
 
 /*
