@@ -7,6 +7,7 @@
 		valid_phone()						"Get Valid Phone Number(s)"
 
 	Improved:
+		redirect()
 		uri_info()
 		encrypt(), decrypt()				"Replace `mcrypt` with 'openssl'. Complete Rewrite. Usage Same"
 

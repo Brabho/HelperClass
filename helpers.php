@@ -96,15 +96,15 @@ function is_Xreq() {
  * Redirect
  */
 
-function redirect($link, $refresh = false) {
+function redirect($link, $code = 302, $refresh = false, $replace = true) {
     ob_start();
     while (ob_get_contents()) {
         ob_end_clean();
     }
-    if ($refresh && is_numeric($refresh)) {
-        header('Refresh: ' . $refresh . '; url=' . $link);
+    if ($refresh) {
+        header('Refresh: ' . $refresh . '; url=' . $link, $replace, $code);
     } else {
-        header('Location: ' . $link);
+        header('Location: ' . $link, $replace, $code);
     }
     die('<h1>Unable to Redirect</h1>');
 }
@@ -113,9 +113,9 @@ function redirect($link, $refresh = false) {
  * Local Date
  */
 
-function date_time($timezone = null, $time = null, $ptrn = 'd-m-Y h:i:sa') {
-    if (isset($timezone)) {
-        date_default_timezone_set($timezone);
+function date_time($zone = null, $time = null, $ptrn = 'd-m-Y h:i:sa') {
+    if (isset($zone)) {
+        date_default_timezone_set($zone);
     }
     if (!isset($time)) {
         $time = time();
