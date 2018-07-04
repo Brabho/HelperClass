@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Email Class Function
+ * Email Class
  */
 
 class email {

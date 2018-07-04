@@ -13,7 +13,7 @@ Lightweight, Fast, Useful.
 
 
 > **_Build_**
-- Version: **2.5**
+- Version: **2.6**
 - Status: **Stable**
 
 
@@ -62,10 +62,10 @@ require "db_pdo.php";
 class myClass extends db_pdo {
     function __construct() {
         $details = [
-            'host' => '127.0.0.1',
-            'db_name' => 'db_name',
-            'user' => 'root',
-            'pass' => '',
+            'HOST' => '127.0.0.1',
+            'DB_NAME' => 'db_name',
+            'USER' => 'root',
+            'PASS' => '',
         ];
 
        $this->connect($details);

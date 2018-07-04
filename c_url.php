@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Mod cURL
+ * cURL Function
  */
 
 function c_url($arr = [], $ext_func = null, $callback = null) {

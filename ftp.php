@@ -1,7 +1,7 @@
 <?php
 
 /*
- * FTP Class
+ * FTP\S Class
  */
 
 class ftp {

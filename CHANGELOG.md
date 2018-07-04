@@ -1,5 +1,19 @@
 # Change Log & History
 
+#### 04-07-2018
+	Stable Version 2.6
+
+	Added: 
+		valid_phone()						"Get Valid Phone Number(s)"
+
+	Improved:
+		uri_info()
+		encrypt(), decrypt()				"Replace `mcrypt` with 'openssl'. Complete Rewrite. Usage Same"
+
+	Changed:
+		mod_strip_tags() >> tags_strip()
+		local_date() >> date_time()
+
 #### 30-06-2018
     Stable Version 2.5
     Stability Improved

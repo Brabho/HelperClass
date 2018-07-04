@@ -3,7 +3,9 @@
 /*
  * Helper Class
  * Custom & Mod Functions
+ */
 
+/*
  * Isset Variable
  */
 
@@ -78,10 +80,10 @@ function virus_check($path, $arr = []) {
 }
 
 /*
- * Get if Request by ajax (Return Bool)
+ * Get if Request by HTTP X Request (Return Bool)
  */
 
-function is_ajax() {
+function is_Xreq() {
     if (array_key_exists('HTTP_X_REQUESTED_WITH', get_all_headers()) ||
             array_key_exists('X-Requested-With', get_all_headers())) {
 
@@ -111,7 +113,7 @@ function redirect($link, $refresh = false) {
  * Local Date
  */
 
-function local_date($timezone = null, $time = null, $ptrn = 'd-m-Y h:i:sa') {
+function date_time($timezone = null, $time = null, $ptrn = 'd-m-Y h:i:sa') {
     if (isset($timezone)) {
         date_default_timezone_set($timezone);
     }
@@ -276,13 +278,28 @@ function mime_type($file) {
  * Uri Information
  */
 
-function uri_info($link) {
+function uri_info($link, $ip = false) {
     $allarr = parse_url($link);
     $domain = (!array_key_exists('host', $allarr)) ? $allarr['path'] : $allarr['host'];
+
     if (is_var($allarr['query'])) {
-        $allarr['query'] = explode('&', $allarr['query']);
+
+        $queries = explode('&', $allarr['query']);
+        $allarr['query'] = [];
+        foreach ($queries as $query) {
+
+            $sq = explode('=', $query);
+            for ($i = 0; $i < count($sq); $i++) {
+
+                $allarr['query'][$sq[0]] = $sq[1];
+            }
+        }
     }
-    $allarr['ip'] = gethostbyname($domain);
+
+    if ($ip) {
+        $allarr['ip'] = gethostbyname($domain);
+    }
+
     return $allarr;
 }
 
@@ -290,19 +307,18 @@ function uri_info($link) {
  * Slug / Link
  */
 
-function slug($text, $case = null, $charset = 'utf-8') {
+function slug($text, $case = false, $charset = 'utf-8') {
     $text = htmlspecialchars($text, ENT_NOQUOTES, $charset);
     $text = preg_replace('~&([A-za-z])(?:acute|cedil|caron|circ|grave|orn|ring|slash|th|tilde|uml);~', '\1', $text);
     $text = preg_replace('~&([A-za-z]{2})(?:lig);~', '\1', $text);
     $text = preg_replace('~&[^;]+;~', '', $text);
     $text = preg_replace('~[\s!*\'();:@&=+$,/?%#[\]]+~', '-', $text);
 
-    if (isset($case)) {
-        if ($case === 'up') {
-            return strtoupper($text);
-        } elseif ($case === 'low') {
-            return strtolower($text);
-        }
+
+    if ($case === 'up') {
+        return strtoupper($text);
+    } elseif ($case === 'low') {
+        return strtolower($text);
     } else {
         return $text;
     }
@@ -351,58 +367,55 @@ function by_ptn($subject, $count = 'all', $pattern = null, $by = 'email') {
  * Encrypt Value
  * arr['p'] = PrimaryKey
  * arr['s'] = SecondaryKey
+ * arr['algo']  = Algorithm / Method
  */
 
-function encrypt($val, $arr = []) {
+function encrypt($str, $arr = []) {
     if (!isset($arr['p'])) {
         $arr['p'] = 'PrimaryKey';
     }
     if (!isset($arr['s'])) {
         $arr['s'] = 'SecondaryKey';
     }
-    $key = hash('sha256', $arr['p'] . $arr['s']);
-    $val = $arr['p'] . $val . $arr['p'];
-    $val = serialize(str_rot13($val));
+    if (!isset($arr['algo'])) {
+        $arr['algo'] = 'aes-256-cbc';
+    }
 
-    $iv = mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_CBC), MCRYPT_DEV_URANDOM);
-    $key = pack('H*', $key);
-    $mac = hash_hmac('sha256', $val, substr(bin2hex($key), -32));
-    $crypt = mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $key, $val . $mac, MCRYPT_MODE_CBC, $iv);
-    $crypt = base64_encode($crypt) . '|' . base64_encode($iv);
-    return $crypt;
+    $key = hash('sha256', $arr['p'] . $arr['s']);
+    $str = serialize(str_rot13($str));
+
+    $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length($arr['algo']));
+    $data = openssl_encrypt($str, $arr['algo'], $key, OPENSSL_RAW_DATA, $iv);
+    $data = base64_encode($data) . '|' . base64_encode($iv);
+    return $data;
 }
 
 /*
  * Decrypt Value
- * arr['p'] = PrimaryKey
- * arr['s'] = SecondaryKey
+ * arr['p']     = PrimaryKey
+ * arr['s']     = SecondaryKey
+ * arr['algo']  = Algorithm / Method
  */
 
-function decrypt($val, $arr = []) {
+function decrypt($str, $arr = []) {
     if (!isset($arr['p'])) {
         $arr['p'] = 'PrimaryKey';
     }
     if (!isset($arr['s'])) {
         $arr['s'] = 'SecondaryKey';
     }
-    $key = hash('sha256', $arr['p'] . $arr['s']);
-    $val = explode('|', $val . '|');
-    $deco = base64_decode($val[0]);
-    $iv = base64_decode($val[1]);
-
-    if (strlen($iv) === mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_CBC)) {
-        $key = pack('H*', $key);
-        $decry = trims(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $key, $deco, MCRYPT_MODE_CBC, $iv));
-        $mac = substr($decry, -64);
-        $decry = substr($decry, 0, -64);
-        $cmac = hash_hmac('sha256', $decry, substr(bin2hex($key), -32));
-
-        if ($mac === $cmac) {
-            $decry = str_rot13(unserialize($decry));
-            $decry = str_replace([$arr['p'], $arr['s']], '', $decry);
-            return $decry;
-        }
+    if (!isset($arr['algo'])) {
+        $arr['algo'] = 'aes-256-cbc';
     }
+
+    $key = hash('sha256', $arr['p'] . $arr['s']);
+    $str = explode('|', $str);
+    $mstr = base64_decode($str[0]);
+    $iv = base64_decode($str[1]);
+
+    $data = openssl_decrypt($mstr, $arr['algo'], $key, OPENSSL_RAW_DATA, $iv);
+    $data = str_rot13(unserialize($data));
+    return $data;
 }
 
 /*
@@ -590,7 +603,7 @@ function trims($content, $delmi = null, $white = null) {
  * Remove Tags with contents
  */
 
-function mod_strip_tags($text, $tags = '', $invert = false) {
+function tags_strip($text, $tags = '', $invert = false) {
     preg_match_all('/<(.+?)[\s]*\/?[\s]*>/si', trims($tags), $tags);
     $tags = array_unique($tags[1]);
     if (is_array($tags) && count($tags) > 0) {

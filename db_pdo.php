@@ -1,7 +1,7 @@
 <?php
 
 /*
- * PDO Database Class
+ * PDO Class Database(s)
  */
 
 class db_pdo {
@@ -19,6 +19,12 @@ class db_pdo {
         $user = $db_id['USER'];
         $pass = $db_id['PASS'];
 
+        if (isset($db_id['DB_TYPE'])) {
+            $db_type = $db_id['DB_TYPE'];
+        } else {
+            $db_type = 'mysql:host';
+        }
+
         if (isset($db_id['charset'])) {
             $charset = $db_id['charset'];
         } else {
@@ -26,7 +32,7 @@ class db_pdo {
         }
 
         try {
-            $this->contodb = new PDO("mysql:host=$host;dbname=$db_name;charset=$charset", $user, $pass, [PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES $charset"]);
+            $this->contodb = new PDO("$db_type=$host;dbname=$db_name;charset=$charset", $user, $pass, [PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES $charset"]);
             $this->contodb->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
             unset($db_id, $host, $db_name, $user, $pass, $charset);
