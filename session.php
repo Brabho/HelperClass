@@ -11,8 +11,8 @@ class session {
 
     public function start() {
         if ((session_id() == '') ||
-                (session_status() == PHP_SESSION_NONE) ||
-                (session_status() !== PHP_SESSION_ACTIVE)) {
+            (session_status() == PHP_SESSION_NONE) ||
+            (session_status() !== PHP_SESSION_ACTIVE)) {
 
             if (!headers_sent()) {
                 session_start();

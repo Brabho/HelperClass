@@ -85,7 +85,7 @@ function virus_check($path, $arr = []) {
 
 function is_Xreq() {
     if (array_key_exists('HTTP_X_REQUESTED_WITH', get_all_headers()) ||
-            array_key_exists('X-Requested-With', get_all_headers())) {
+        array_key_exists('X-Requested-With', get_all_headers())) {
 
         return true;
     }
@@ -128,8 +128,8 @@ function date_time($zone = null, $time = null, $ptrn = 'd-m-Y h:i:sa') {
  */
 
 function time_ago($time) {
-    $periods = array('second', 'minute', 'hour', 'day', 'week', 'month', 'year', 'decade');
-    $lengths = array('60', '60', '24', '7', '4.35', '12', '10');
+    $periods = array ('second', 'minute', 'hour', 'day', 'week', 'month', 'year', 'decade');
+    $lengths = array ('60', '60', '24', '7', '4.35', '12', '10');
     $now = time();
     $difference = $now - $time;
     for ($j = 0; $difference >= $lengths[$j] && $j < count($lengths) - 1; $j++) {
@@ -212,11 +212,13 @@ function cp_dir($src, $dest) {
         $destfile = trims($dest, '/') . '/' . $file;
         if (!is_readable($srcfile)) {
             continue;
-        } if ($file != '.' && $file != '..') {
+        }
+        if ($file != '.' && $file != '..') {
             if (is_dir($srcfile)) {
                 if (!file_exists($destfile)) {
                     mkdir($destfile);
-                } $this->copy($srcfile, $destfile);
+                }
+                copy($srcfile, $destfile);
             } else {
                 copy($srcfile, $destfile);
             }
@@ -234,7 +236,7 @@ function del_dir($dir) {
         foreach ($objects as $object) {
             if ($object != '.' && $object != '..') {
                 if (filetype($dir . '/' . $object) == 'dir') {
-                    $this->del($dir . '/' . $object);
+                    del($dir . '/' . $object);
                 } else {
                     unlink($dir . '/' . $object);
                 }
@@ -286,13 +288,10 @@ function uri_info($link, $ip = false) {
 
         $queries = explode('&', $allarr['query']);
         $allarr['query'] = [];
+
         foreach ($queries as $query) {
-
             $sq = explode('=', $query);
-            for ($i = 0; $i < count($sq); $i++) {
-
-                $allarr['query'][$sq[0]] = $sq[1];
-            }
+            $allarr['query'][$sq[0]] = $sq[1];
         }
     }
 
@@ -478,7 +477,7 @@ function rand_char($length = 40) {
 function req_ps($exp = '3') {
 
     if ((array_key_exists('HTTPS', $_SERVER) && ($_SERVER['HTTPS'] === 'on' || $_SERVER['HTTPS'] === 1)) ||
-            (array_key_exists('HTTP_X_FORWARDED_PROTO', $_SERVER) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')) {
+        (array_key_exists('HTTP_X_FORWARDED_PROTO', $_SERVER) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')) {
 
         $protocol = 'https://';
     } else {
@@ -580,20 +579,17 @@ function re_name($path, $nam) {
 }
 
 /*
- * Mod Trim
+ * Mod Trim Function
  */
 
-function trims($content, $delmi = null, $white = null) {
-    if (!isset($delmi)) {
-        $delmi = " \t\n\r\0\x0B";
-    }
+function trims($content, $space = null, $delmi = " ,\/\t\n\r\\") {
 
     $content = trim($content, $delmi);
     $content = ltrim($content, $delmi);
     $content = rtrim($content, $delmi);
 
-    if (isset($white)) {
-        $content = preg_replace('/\s+/', $white, $content);
+    if (isset($space)) {
+        $content = preg_replace('/\s+/', $space, $content);
     }
     return $content;
 }
@@ -733,7 +729,7 @@ function valid_phone($phone) {
 
 function valid_email($email, $host = false) {
     if (filter_var($email, FILTER_VALIDATE_EMAIL) &&
-            preg_match('/^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i', $email)) {
+        preg_match('/^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i', $email)) {
 
         if ($host === true) {
             return (checkdnsrr(array_pop(explode("@", $email)), "MX"));
@@ -844,7 +840,7 @@ function dom_favicon($html) {
         foreach ($load->getElementsByTagName('link') as $node) {
 
             if (strtolower($node->getAttribute('rel')) === 'icon' ||
-                    strtolower($node->getAttribute('rel')) === 'shortcut icon') {
+                strtolower($node->getAttribute('rel')) === 'shortcut icon') {
 
                 $matches = $node->getAttribute('href');
                 break;
@@ -909,7 +905,7 @@ function dom_styles($html, $num = 'all') {
     if ($load = dom_load($html)) {
         foreach ($load->getElementsByTagName('link') as $node) {
             if (strtolower($node->getAttribute('rel')) === 'stylesheet' &&
-                    strtolower($node->getAttribute('tyle')) === 'text/css') {
+                strtolower($node->getAttribute('tyle')) === 'text/css') {
 
                 $matches[] = $node->getAttribute('href');
             }
@@ -961,7 +957,7 @@ function var_clean($force = false) {
 
         if ($force === false) {
             if ($var === 'GLOBALS' || $var === '_POST' || $var === '_GET' || $var === '_COOKIE' ||
-                    $var === '_FILES' || $var === '_REQUEST' || $var === '_SERVER' || $var === '_ENV') {
+                $var === '_FILES' || $var === '_REQUEST' || $var === '_SERVER' || $var === '_ENV') {
 
                 continue;
             }
@@ -1109,8 +1105,8 @@ function json_min($json) {
 
 function usr_referer() {
     if (array_key_exists('HTTP_REFERER', $_SERVER) &&
-            $_SERVER['HTTP_REFERER'] !== null &&
-            !empty($_SERVER['HTTP_REFERER'])) {
+        $_SERVER['HTTP_REFERER'] !== null &&
+        !empty($_SERVER['HTTP_REFERER'])) {
 
         return htm_en($_SERVER['HTTP_REFERER']);
     } elseif (array_key_exists('Referer', get_all_headers())) {
@@ -1170,17 +1166,17 @@ function ip_d($uip = false) {
 function usr_browser() {
     $browser = 'Other';
     $browser_arr = [
-        '@msie@i' => 'Internet Explorer',
-        '@Trident@i' => 'Internet Explorer',
-        '@edge@i' => 'Edge',
-        '@firefox@i' => 'Firefox',
-        '@opr@i' => 'Opera',
-        '@chrome@i' => 'Chrome',
-        '@safari@i' => 'Safari',
-        '@netscape@i' => 'Netscape',
-        '@maxthon@i' => 'Maxthon',
-        '@konqueror@i' => 'Konqueror',
-        '@mobile@i' => 'Handheld Browser',
+        '@msie@i'            => 'Internet Explorer',
+        '@Trident@i'         => 'Internet Explorer',
+        '@edge@i'            => 'Edge',
+        '@firefox@i'         => 'Firefox',
+        '@opr@i'             => 'Opera',
+        '@chrome@i'          => 'Chrome',
+        '@safari@i'          => 'Safari',
+        '@netscape@i'        => 'Netscape',
+        '@maxthon@i'         => 'Maxthon',
+        '@konqueror@i'       => 'Konqueror',
+        '@mobile@i'          => 'Handheld Browser',
         '@UCBrowser|UCWEB@i' => 'UC Browser'
     ];
     foreach ($browser_arr as $regex => $value) {
@@ -1202,30 +1198,30 @@ function usr_browser() {
 function usr_os() {
     $os = 'Other';
     $os_arr = [
-        '@windows nt 10@i' => 'Windows 10',
-        '@windows nt 6.3@i' => 'Windows 8.1',
-        '@windows nt 6.2@i' => 'Windows 8',
-        '@windows nt 6.1@i' => 'Windows 7',
-        '@windows nt 6.0@i' => 'Windows Vista',
-        '@windows nt 5.2@i' => 'Windows Server 2003/XP x64',
-        '@windows nt 5.1@i' => 'Windows XP',
-        '@windows xp@i' => 'Windows XP',
-        '@windows nt 5.0@i' => 'Windows 2000',
-        '@windows me@i' => 'Windows ME',
-        '@win98@i' => 'Windows 98',
-        '@win95@i' => 'Windows 95',
-        '@win16@i' => 'Windows 3.11',
+        '@windows nt 10@i'      => 'Windows 10',
+        '@windows nt 6.3@i'     => 'Windows 8.1',
+        '@windows nt 6.2@i'     => 'Windows 8',
+        '@windows nt 6.1@i'     => 'Windows 7',
+        '@windows nt 6.0@i'     => 'Windows Vista',
+        '@windows nt 5.2@i'     => 'Windows Server 2003/XP x64',
+        '@windows nt 5.1@i'     => 'Windows XP',
+        '@windows xp@i'         => 'Windows XP',
+        '@windows nt 5.0@i'     => 'Windows 2000',
+        '@windows me@i'         => 'Windows ME',
+        '@win98@i'              => 'Windows 98',
+        '@win95@i'              => 'Windows 95',
+        '@win16@i'              => 'Windows 3.11',
         '@macintosh|mac os x@i' => 'Mac OS X',
-        '@mac_powerpc@i' => 'Mac OS 9',
-        '@ubuntu@i' => 'Ubuntu',
-        '@Red Hat@i' => 'Red Hat',
-        '@linux@i' => 'Linux',
-        '@iphone@i' => 'iPhone',
-        '@ipod@i' => 'iPod',
-        '@ipad@i' => 'iPad',
-        '@android@i' => 'Android',
-        '@blackberry@i' => 'BlackBerry',
-        '@webos@i' => 'Mobile'
+        '@mac_powerpc@i'        => 'Mac OS 9',
+        '@ubuntu@i'             => 'Ubuntu',
+        '@Red Hat@i'            => 'Red Hat',
+        '@linux@i'              => 'Linux',
+        '@iphone@i'             => 'iPhone',
+        '@ipod@i'               => 'iPod',
+        '@ipad@i'               => 'iPad',
+        '@android@i'            => 'Android',
+        '@blackberry@i'         => 'BlackBerry',
+        '@webos@i'              => 'Mobile'
     ];
     foreach ($os_arr as $regex => $value) {
 

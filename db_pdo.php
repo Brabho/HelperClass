@@ -198,7 +198,7 @@ class db_pdo {
                 foreach ($rows as $row) {
                     $row = array_map([$this->contodb, 'quote'], $row);
                     $sql = 'INSERT INTO `' . $table . '` (`' . implode('`, `', array_keys($row)) . '`) '
-                            . 'VALUES (' . implode(', ', $row) . ');' . PHP_EOL;
+                        . 'VALUES (' . implode(', ', $row) . ');' . PHP_EOL;
                     fwrite($file, $sql);
                 }
 

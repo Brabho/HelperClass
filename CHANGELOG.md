@@ -1,5 +1,12 @@
 # Change Log & History
 
+#### 11-08-2018
+	Stable Version 2.7
+
+	Improved:
+		captcha.php
+		helpers.php
+
 #### 04-07-2018
 	Stable Version 2.6
 

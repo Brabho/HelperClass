@@ -116,7 +116,6 @@ function c_url($arr = [], $ext_func = null, $callback = null) {
         $ext_func($ch);
     }
 
-
     if ($arr['method'] === 'POST' && isset($arr['data'])) {
         /*
          * POST Reuqest
