@@ -119,7 +119,10 @@ class db_pdo {
                 } else {
                     $result[0] = 'fail';
                 }
-                $result['rows'] = $dbh->rowCount();
+                $result['rows'] = (int) $dbh->rowCount();
+                if (strlen($result['rows']) < 1) {
+                    $result['rows'] = 0;
+                }
             }
 
             if (isset($result) && isset($arr['fetch'])) {

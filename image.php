@@ -37,7 +37,6 @@ class image {
     /*
      * Checking Image File
      */
-
     public function check($file, $mime = null) {
 
         if (isset($mime) && is_array($mime)) {
@@ -71,7 +70,6 @@ class image {
     /*
      * Convert Image
      */
-
     public function convert($file, $to) {
         $this->check($file);
         if ($this->status[0] !== 'fail') {
@@ -195,7 +193,6 @@ class image {
     /*
      * Crop Image
      */
-
     public function crop($file, $arr = []) {
         $this->check($file);
         if (!is_numeric($arr['width']) || !is_numeric($arr['height'])) {
@@ -271,7 +268,6 @@ class image {
      * Marge 2 Images
      * Support `.png` Only
      */
-
     public function marge($file, $add, $arr = []) {
         $add = $this->check($add);
         $file = $this->check($file);
@@ -303,7 +299,6 @@ class image {
     /*
      * Copy image from URL
      */
-
     public function url2img($link, $des, $mime = null) {
         if (isset($mime) && is_array($mime)) {
             $this->mime = $mime;
@@ -329,7 +324,6 @@ class image {
      * All in One
      * Not Copy image from URL *
      */
-
     public function save($arr = []) {
 
         if (array_key_exists('mime', $arr) && is_array($arr['mime'])) {
@@ -371,7 +365,7 @@ class image {
             }
 
             $new_save = $arr['save'] . '/' . $arr['name'] . $this->status['extn'];
-            rename($this->status['saved'], $new_save);
+            copy($this->status['saved'], $new_save);
             $this->status['file'] = $arr['file'];
             $this->status['saved'] = $new_save;
         }

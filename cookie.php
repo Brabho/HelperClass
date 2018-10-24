@@ -5,10 +5,10 @@
  */
 
 class cookie {
+
     /*
      * Set Cookie
      */
-
     public function set($name, $value, $extime = 86400, $arr = []) {
 
         if (!array_key_exists('path', $arr)) {
@@ -31,7 +31,6 @@ class cookie {
     /*
      * Get Cookie
      */
-
     public function get($name) {
         return (array_key_exists($name, $_COOKIE) && $_COOKIE[$name] !== null && !empty($_COOKIE[$name])) ? $_COOKIE[$name] : false;
     }
@@ -39,19 +38,17 @@ class cookie {
     /*
      * Remove Single Cookie
      */
-
     public function remove($name, $path = '/') {
-        setcookie($name, '0', time() - 86400, $path);
+        setcookie($name, '0', time() - 2628000, $path);
         unset($name);
     }
 
     /*
      * Remove All Cookies
      */
-
     public function remove_all($path = '/') {
         foreach ($_COOKIE as $cookie => $c_val) {
-            setcookie($cookie, '0', time() - 86400, $path);
+            setcookie($cookie, '0', time() - 2628000, $path);
         }
     }
 

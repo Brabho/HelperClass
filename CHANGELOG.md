@@ -1,5 +1,11 @@
 # Change Log & History
 
+#### 24-10-2018
+	Stable Version 2.8
+	Bugs Fixed
+	Stability Improved
+	Minor Changes
+
 #### 11-08-2018
 	Stable Version 2.7
 

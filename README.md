@@ -13,14 +13,14 @@ Lightweight, Fast, Useful.
 
 
 > **_Build_**
-- Version: **2.7**
+- Version: **2.8**
 - Status: **Stable**
 
 
 
 > **_Tested_**
 
-PHP    (5.6, 7.0, 7.1, 7.2)
+PHP    (5.6, 7.0, 7.1, 7.2, 7.3)
 
 Nginx  (1.9, 1.10, 1.12, 1.14)
 

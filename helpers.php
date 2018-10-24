@@ -10,7 +10,7 @@
  */
 
 function is_var(&$var) {
-    return (isset($var) && $var !== null && $var !== '' && !empty($var) && strlen(trims($var)) > 0);
+    return (isset($var) && !is_null($var) && $var && strlen(trims($var)) > 0);
 }
 
 /*
@@ -18,7 +18,7 @@ function is_var(&$var) {
  */
 
 function is_arr(&$var, $key) {
-    return (isset($var) && is_array($var) && array_key_exists($key, $var) && $var[$key] !== null && $var[$key] !== '' && !empty($var[$key]));
+    return (isset($var) && is_array($var) && array_key_exists($key, $var) && !is_null($var[$key]) && $var[$key] && !empty($var[$key]));
 }
 
 /*
@@ -83,9 +83,9 @@ function virus_check($path, $arr = []) {
  * Get if Request by HTTP X Request (Return Bool)
  */
 
-function is_Xreq() {
-    if (array_key_exists('HTTP_X_REQUESTED_WITH', get_all_headers()) ||
-        array_key_exists('X-Requested-With', get_all_headers())) {
+function is_xreq() {
+    if (array_key_exists('HTTP_X_REQUESTED_WITH', $_SERVER) ||
+        array_key_exists('X-Requested-With', $_SERVER)) {
 
         return true;
     }
@@ -101,12 +101,15 @@ function redirect($link, $code = 302, $refresh = false, $replace = true) {
     while (ob_get_contents()) {
         ob_end_clean();
     }
+
     if ($refresh) {
-        header('Refresh: ' . $refresh . '; url=' . $link, $replace, $code);
+        $to_link = 'Refresh: ' . $refresh . '; url=' . $link;
     } else {
-        header('Location: ' . $link, $replace, $code);
+        $to_link = 'Location: ' . $link;
     }
-    die('<h1>Unable to Redirect</h1>');
+
+    http_response_code($code);
+    header($to_link, $replace, $code);
 }
 
 /*
@@ -137,7 +140,7 @@ function time_ago($time) {
     }
     $difference = round($difference);
     if ($difference != 1) {
-        $periods[$j] .= "s";
+        $periods[$j] .= 's';
     }
     return $difference . ' ' . $periods[$j];
 }
@@ -267,7 +270,6 @@ function dir_size($dir) {
 /*
  * Get Mime Type
  */
-
 function mime_type($file) {
     $finfo = finfo_open(FILEINFO_MIME_TYPE);
     $info = finfo_file($finfo, $file);
@@ -291,7 +293,9 @@ function uri_info($link, $ip = false) {
 
         foreach ($queries as $query) {
             $sq = explode('=', $query);
-            $allarr['query'][$sq[0]] = $sq[1];
+            if (isset($sq[0], $sq[1])) {
+                $allarr['query'][$sq[0]] = $sq[1];
+            }
         }
     }
 
@@ -307,12 +311,11 @@ function uri_info($link, $ip = false) {
  */
 
 function slug($text, $case = false, $charset = 'utf-8') {
-    $text = htmlspecialchars($text, ENT_NOQUOTES, $charset);
+    $text = htmlspecialchars($text, ENT_QUOTES, $charset);
     $text = preg_replace('~&([A-za-z])(?:acute|cedil|caron|circ|grave|orn|ring|slash|th|tilde|uml);~', '\1', $text);
     $text = preg_replace('~&([A-za-z]{2})(?:lig);~', '\1', $text);
     $text = preg_replace('~&[^;]+;~', '', $text);
     $text = preg_replace('~[\s!*\'();:@&=+$,/?%#[\]]+~', '-', $text);
-
 
     if ($case === 'up') {
         return strtoupper($text);
@@ -335,26 +338,41 @@ function by_ptn($subject, $count = 'all', $pattern = null, $by = 'email') {
                 break;
 
             case 'phone':
-                $pattern = '/(\d{3}\s*-?\s*\d{3}\s*-?\s*\d{4})/i';
+                $pattern = '@(\d{3}\s*-?\s*\d{3}\s*-?\s*\d{4})@i';
                 break;
 
             case 'img':
-                $pattern = '/<img.+src=[\'"]([^\'"]+)[\'"].*>/i';
+                $pattern = '@<img[^>]+>@i';
                 break;
 
             case 'url':
-                $pattern = '/(http|https|ftp|ftps)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/i';
+                $pattern = '@(http|https|ftp|ftps)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?@i';
                 break;
         }
     }
 
     preg_match_all($pattern, $subject, $matches);
     if (array_key_exists(0, $matches)) {
+
+        $matches = $matches[0];
+
+        /*
+         * By Phone Only
+         */
+        if (!isset($pattern) && $by === 'phone') {
+            for ($i = 0; $i < count($matches); $i++) {
+
+                if (!valid_num($matches[$i])) {
+                    unset($matches[$i]);
+                }
+            }
+        }
+
         if ($count === 'all') {
-            return $matches[0];
+            return $matches;
         } else {
-            if (array_key_exists($count, $matches[0])) {
-                return $matches[0][$count];
+            if (array_key_exists($count, $matches)) {
+                return $matches[$count];
             }
             return false;
         }
@@ -368,7 +386,6 @@ function by_ptn($subject, $count = 'all', $pattern = null, $by = 'email') {
  * arr['s'] = SecondaryKey
  * arr['algo']  = Algorithm / Method
  */
-
 function encrypt($str, $arr = []) {
     if (!isset($arr['p'])) {
         $arr['p'] = 'PrimaryKey';
@@ -395,7 +412,6 @@ function encrypt($str, $arr = []) {
  * arr['s']     = SecondaryKey
  * arr['algo']  = Algorithm / Method
  */
-
 function decrypt($str, $arr = []) {
     if (!isset($arr['p'])) {
         $arr['p'] = 'PrimaryKey';
@@ -421,7 +437,6 @@ function decrypt($str, $arr = []) {
  * Random Number
  * Default 40
  */
-
 function rand_num($length = 40) {
     for ($i = -1; $i <= 4; $i++) {
         $bytes = openssl_random_pseudo_bytes(8, $crypto_strong);
@@ -437,20 +452,32 @@ function rand_num($length = 40) {
 /*
  * Random String
  * Default 40
+ * AS: Alphabet or Number
  */
-
-function rand_str($length = 40) {
+function rand_str($length = 40, $only = null) {
     $str = uniqid(microtime(true), true);
     $str = rand(10000, 99999) . $str . mt_rand(100000, 999999) . time();
     $str = base64_encode(serialize($str));
-    $str = hash('sha256', $str);
+    $str = hash('sha512', $str);
+
+    if (isset($only)) {
+        switch ($only) {
+
+            case 'alpha':
+                $str = preg_replace('@[^a-zA-Z]@', '', $str);
+                break;
+
+            case 'num':
+                $str = preg_replace('@[^0-9]@', '', $str);
+                break;
+        }
+    }
     return substr($str, 0, $length);
 }
 
 /*
  * Random Crypto String
  */
-
 function rand_crypt($bit = 128) {
     $bit = $bit / 2;
     for ($i = -1; $i <= 4; $i++) {
@@ -465,7 +492,7 @@ function rand_crypt($bit = 128) {
  */
 
 function rand_char($length = 40) {
-    $chars = '!@#$%&*-_=';
+    $chars = '`~!@#$%^&*-=+|,.?';
     $rand_str = str_shuffle(rand_str(30) . $chars);
     return substr($rand_str, 0, $length);
 }
@@ -473,7 +500,6 @@ function rand_char($length = 40) {
 /*
  * Request Per Second
  */
-
 function req_ps($exp = '3') {
 
     if ((array_key_exists('HTTPS', $_SERVER) && ($_SERVER['HTTPS'] === 'on' || $_SERVER['HTTPS'] === 1)) ||
@@ -536,10 +562,20 @@ function csrf_valid() {
 }
 
 /*
- * HTML Encode
+ * Html Chatset Convert
  */
+function htm_cvt($content, $arr = []) {
+    if (!array_key_exists('charset', $arr)) {
+        $arr['charset'] = 'utf-8';
+    }
+    return iconv(mb_detect_encoding($content, mb_detect_order(), true), $arr['charset'] . '//IGNORE', $content);
+}
 
+/*
+ * HTML Encode & Decode
+ */
 function htm_en($content, $arr = []) {
+
     if (!array_key_exists('strip', $arr)) {
         $arr['strip'] = false;
     }
@@ -549,23 +585,59 @@ function htm_en($content, $arr = []) {
     if (!array_key_exists('encode', $arr)) {
         $arr['encode'] = 'specialchars';
     }
+    if (!array_key_exists('type', $arr)) {
+        $arr['type'] = 'encode';
+    }
+    if (!array_key_exists('flag', $arr)) {
+        $arr['flag'] = ENT_QUOTES;
+    }
     if (!array_key_exists('charset', $arr)) {
         $arr['charset'] = 'utf-8';
     }
 
+    /*
+     * Convert to Chatset
+     */
+    $content = htm_cvt($content, $arr);
+
+    /*
+     * Strip Tags
+     */
     if ($arr['strip'] === true) {
         $content = strip_tags($content, $arr['allow']);
     }
 
-    switch ($arr['encode']) {
-        case 'specialchars':
-            $content = htmlspecialchars($content, ENT_QUOTES, $arr['charset']);
-            break;
+    /*
+     * Type Encode
+     */
+    if ($arr['type'] === 'encode') {
 
-        case 'entities':
-            $content = htmlentities($content, ENT_QUOTES, $arr['charset']);
-            break;
+        switch ($arr['encode']) {
+            case 'specialchars':
+                $content = htmlspecialchars($content, $arr['flag'], $arr['charset']);
+                break;
+
+            case 'entities':
+                $content = htmlentities($content, $arr['flag'], $arr['charset']);
+                break;
+        }
+
+    } else {
+
+        /*
+         * Type Decode
+         */
+        switch ($arr['encode']) {
+            case 'specialchars':
+                $content = htmlspecialchars_decode($content, $arr['flag']);
+                break;
+
+            case 'entities':
+                $content = html_entity_decode($content, $arr['flag'], $arr['charset']);
+                break;
+        }
     }
+
     return $content;
 }
 
@@ -598,7 +670,6 @@ function trims($content, $space = null, $delmi = " ,\/\t\n\r\\") {
  * Mod Strip Tags
  * Remove Tags with contents
  */
-
 function tags_strip($text, $tags = '', $invert = false) {
     preg_match_all('/<(.+?)[\s]*\/?[\s]*>/si', trims($tags), $tags);
     $tags = array_unique($tags[1]);
@@ -612,6 +683,13 @@ function tags_strip($text, $tags = '', $invert = false) {
         return preg_replace('@<(\w+)\b.*?>.*?</\1>@si', '', $text);
     }
     return $text;
+}
+
+/*
+ * Preg Block Tags
+ */
+function preg_blocktags($content, $allow = '') {
+    return preg_replace("@<\s*\/?(" . $allow . ")\s*[^>]*?>@im", '', $content);
 }
 
 /*
@@ -686,15 +764,15 @@ function zip_extract($source, $destiny) {
 function valid_alpha($alpha, $let = 'all') {
     switch ($let) {
         case 'all':
-            return (preg_match_all('/^[a-zA-Z]+$/i', $alpha));
+            return (preg_match_all('@^[a-zA-Z]+$@i', $alpha));
             break;
 
         case 'low':
-            return (preg_match_all('/^[a-z]+$/', $alpha));
+            return (preg_match_all('@^[a-z]+$@', $alpha));
             break;
 
         case 'up':
-            return (preg_match_all('/^[A-Z]+$/', $alpha));
+            return (preg_match_all('@^[A-Z]+$@', $alpha));
             break;
     }
 }
@@ -704,7 +782,7 @@ function valid_alpha($alpha, $let = 'all') {
  */
 
 function valid_num($num) {
-    return (preg_match_all('/^[0-9]+$/', $num) && !filter_var($num, FILTER_VALIDATE_INT) === false);
+    return (preg_match_all('@^[0-9]+$@', $num) && !filter_var($num, FILTER_VALIDATE_INT) === false);
 }
 
 /*
@@ -755,7 +833,6 @@ function valid_url($str, $qstr = false) {
 /*
  * Get All Headers
  */
-
 function get_all_headers() {
     $headers = [];
     foreach ($_SERVER as $name => $value) {
@@ -1102,16 +1179,12 @@ function json_min($json) {
 /*
  * Get User Referer
  */
-
 function usr_referer() {
     if (array_key_exists('HTTP_REFERER', $_SERVER) &&
-        $_SERVER['HTTP_REFERER'] !== null &&
-        !empty($_SERVER['HTTP_REFERER'])) {
+        !is_null($_SERVER['HTTP_REFERER']) &&
+        strlen($_SERVER['HTTP_REFERER']) > 0) {
 
         return htm_en($_SERVER['HTTP_REFERER']);
-    } elseif (array_key_exists('Referer', get_all_headers())) {
-
-        return htm_en(get_all_headers()['Referer']);
     }
     return false;
 }
@@ -1160,17 +1233,52 @@ function ip_d($uip = false) {
 }
 
 /*
+ * If user using Proxy
+ */
+function usr_proxy() {
+    $r = false;
+    $headers = [
+        'HTTP_X_CLUSTER_CLIENT_IP',
+        'HTTP_PROXY_CONNECTION',
+        'HTTP_X_FORWARDED_FOR',
+        'HTTP_FORWARDED_FOR',
+        'HTTP_X_FORWARDED',
+        'HTTP_FORWARDED',
+        'HTTP_CLIENT_IP',
+        'HTTP_VIA',
+        'HTTP_FORWARDED_FOR_IP',
+        'X_FORWARDED_FOR',
+        'X-TINYPROXY',
+        'X-PROXY-ID',
+        'X_FORWARDED',
+        'FORWARDED_FOR_IP',
+        'FORWARDED_FOR',
+        'FORWARDED',
+        'CLIENT_IP',
+        'PROXY-AGENT',
+        'VIA'
+    ];
+    foreach ($headers as $header) {
+        if (isset($_SERVER[$header])) {
+            $r = $_SERVER[$header];
+        }
+    }
+    return $r;
+}
+
+/*
  * Get User Browser
  */
-
 function usr_browser() {
     $browser = 'Other';
     $browser_arr = [
         '@msie@i'            => 'Internet Explorer',
         '@Trident@i'         => 'Internet Explorer',
         '@edge@i'            => 'Edge',
+        '@kaios@i'           => 'Kaios Browser',
         '@firefox@i'         => 'Firefox',
         '@opr@i'             => 'Opera',
+        '@samsungbrowser@i'  => 'Samsung Browser',
         '@chrome@i'          => 'Chrome',
         '@safari@i'          => 'Safari',
         '@netscape@i'        => 'Netscape',
@@ -1180,13 +1288,11 @@ function usr_browser() {
         '@UCBrowser|UCWEB@i' => 'UC Browser'
     ];
     foreach ($browser_arr as $regex => $value) {
-
-        if (preg_match_all($regex, get_all_headers()['User-Agent'], $matchs)) {
+        if (preg_match_all($regex, $_SERVER['HTTP_USER_AGENT'], $matchs)) {
             $browser = $value;
             break;
         }
     }
-
     unset($browser_arr, $regex, $value);
     return $browser;
 }
@@ -1194,7 +1300,6 @@ function usr_browser() {
 /*
  * Get User OS
  */
-
 function usr_os() {
     $os = 'Other';
     $os_arr = [
@@ -1213,41 +1318,42 @@ function usr_os() {
         '@win16@i'              => 'Windows 3.11',
         '@macintosh|mac os x@i' => 'Mac OS X',
         '@mac_powerpc@i'        => 'Mac OS 9',
+        '@kaios@i'              => 'Kai OS',
         '@ubuntu@i'             => 'Ubuntu',
         '@Red Hat@i'            => 'Red Hat',
+        '@android@i'            => 'Android',
         '@linux@i'              => 'Linux',
         '@iphone@i'             => 'iPhone',
         '@ipod@i'               => 'iPod',
         '@ipad@i'               => 'iPad',
-        '@android@i'            => 'Android',
         '@blackberry@i'         => 'BlackBerry',
-        '@webos@i'              => 'Mobile'
+        '@webos|wos@i'          => 'Mobile'
     ];
     foreach ($os_arr as $regex => $value) {
-
-        if (preg_match($regex, get_all_headers()['User-Agent'])) {
+        if (preg_match($regex, $_SERVER['HTTP_USER_AGENT'])) {
             $os = $value;
             break;
         }
     }
-
     unset($os_arr, $regex, $value);
     return $os;
+}
+
+/*
+ * Get User Device is Mobile
+ */
+function usr_ismobile() {
+    return preg_match('@kaios|samsungbrowser|samsung|meego|avantgo|playbook|opera m|symbian|smartphone|midp|wap|android|bolt|boost|docomo|fone|blazer|hiptop|phone|mini|tablet|iphone|ipod|ipad|blackberry|webos|wos|UCBrowser|UCWEB|mobile|mobi@i', $_SERVER['HTTP_USER_AGENT']);
 }
 
 /*
  * User GEO Location + Timezone
  * API: geoplugin || ipinfo
  */
-
-function usr_location($ip = null, $geo_api = null) {
-
-    if (!isset($geo_api)) {
-        $geo_api = 'geoplugin';
-    }
+function usr_location($ip = null, $geo_api = 'geoplugin') {
 
     if (!isset($ip)) {
-        $ip = usr_ip();
+        $ip = ip_d()[0];
     }
 
     $location = [];
