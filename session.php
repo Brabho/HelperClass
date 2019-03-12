@@ -10,11 +10,11 @@ class session {
      */
 
     public function start() {
-        if ((session_id() == '') ||
+        if((session_id() == '') ||
             (session_status() == PHP_SESSION_NONE) ||
             (session_status() !== PHP_SESSION_ACTIVE)) {
 
-            if (!headers_sent()) {
+            if(!headers_sent()) {
                 session_start();
                 session_regenerate_id(true);
                 return true;
@@ -41,7 +41,8 @@ class session {
 
     public function get($name) {
         $this->start();
-        return (array_key_exists($name, $_SESSION) && $_SESSION[$name] !== null && !empty($_SESSION[$name])) ? $_SESSION[$name] : false;
+        return (array_key_exists($name, $_SESSION) && $_SESSION[$name] !== null && !empty($_SESSION[$name])) ?
+            $_SESSION[$name] : false;
     }
 
     /*
@@ -61,9 +62,10 @@ class session {
     public function remove_all() {
         $this->start();
         $_SESSION = [];
-        if (ini_get("session.use_cookies")) {
+        if(ini_get("session.use_cookies")) {
             $params = session_get_cookie_params();
-            setcookie(session_name(), '', time() - 86400, $params["path"], $params["domain"], $params["secure"], $params["httponly"]);
+            setcookie(session_name(), '', time() - 86400, $params["path"], $params["domain"], $params["secure"],
+                $params["httponly"]);
         }
         session_unset();
     }

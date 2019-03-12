@@ -32,8 +32,9 @@ class email {
      */
 
     private function email_valid($email) {
-        if (filter_var($email, FILTER_VALIDATE_EMAIL) &&
-            preg_match('/^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i', $email)) {
+        if(filter_var($email, FILTER_VALIDATE_EMAIL) &&
+            preg_match('/^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i',
+                $email)) {
 
             return true;
         }
@@ -45,9 +46,9 @@ class email {
      */
 
     public function to($to) {
-        if ($this->status[0] === 'success') {
+        if($this->status[0] === 'success') {
 
-            if ($this->html === true) {
+            if($this->html === true) {
                 $this->header .= "MIME-Version: 1.0\r\n";
                 $this->header .= "Content-type: text/html;charset=" . $this->charset . "\r\n";
                 $this->header .= "X-Mailer: PHP- " . phpversion() . "\r\n";
@@ -56,8 +57,8 @@ class email {
             $to = trim(preg_replace('/\s/', '', $to), ',');
             $to = explode(',', $to);
             $tomail = [];
-            foreach ($to as $mailto) {
-                if ($this->email_valid($mailto)) {
+            foreach($to as $mailto) {
+                if($this->email_valid($mailto)) {
                     $tomail[] = $mailto;
                 } else {
                     $this->status[0] = 'fail';
@@ -74,14 +75,14 @@ class email {
      */
 
     public function from($from, $name = null, $reply_to = null) {
-        if ($this->status[0] === 'success') {
-            if ($this->email_valid($from)) {
-                if (isset($name)) {
+        if($this->status[0] === 'success') {
+            if($this->email_valid($from)) {
+                if(isset($name)) {
                     $this->header .= "From: " . $name . " <" . $from . ">\r\n";
                 } else {
                     $this->header .= "From: " . $from . "\r\n";
                 }
-                if (isset($reply_to)) {
+                if(isset($reply_to)) {
                     $this->header .= "Reply-To: " . $reply_to . "\r\n";
                 }
             } else {
@@ -96,12 +97,12 @@ class email {
      */
 
     public function cc($cc = null) {
-        if ($this->status[0] === 'success' && isset($cc)) {
+        if($this->status[0] === 'success' && isset($cc)) {
             $cc = trim(preg_replace('/\s/', '', $cc), ',');
             $cc = explode(',', $cc);
             $tomail = [];
-            foreach ($cc as $mailto) {
-                if ($this->email_valid($mailto)) {
+            foreach($cc as $mailto) {
+                if($this->email_valid($mailto)) {
                     $tomail[] = $mailto;
                 } else {
                     $this->status[0] = 'fail';
@@ -117,9 +118,9 @@ class email {
      * Email Attachment
      */
 
-    public function attachment($file, $file_name = NULL) {
-        if ($this->status[0] === 'success') {
-            if (!isset($file_name)) {
+    public function attachment($file, $file_name = null) {
+        if($this->status[0] === 'success') {
+            if(!isset($file_name)) {
                 $file_name = ucwords(basename($file));
             }
 
@@ -141,9 +142,9 @@ class email {
      */
 
     public function send() {
-        if ($this->status[0] === 'success') {
+        if($this->status[0] === 'success') {
 
-            if (!mail($this->to, $this->subject, $this->message, $this->header)) {
+            if(!mail($this->to, $this->subject, $this->message, $this->header)) {
                 $this->status[0] = 'fail';
                 $this->status['reason'] = 'mail_function';
             }

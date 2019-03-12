@@ -1,8 +1,9 @@
 # HelperClass
 
+**v3.0 : _Stable_**
 
 
-> **_Description_**
+> #### _Description_
 
 PHP Helper Class & Function.
 
@@ -11,14 +12,7 @@ Most used Classes and Functions.
 Lightweight, Fast, Useful.
 
 
-
-> **_Build_**
-- Version: **2.8**
-- Status: **Stable**
-
-
-
-> **_Tested_**
+> #### _Tested_
 
 PHP    (5.6, 7.0, 7.1, 7.2, 7.3)
 
@@ -27,15 +21,14 @@ Nginx  (1.9, 1.10, 1.12, 1.14)
 Apache (2.2, 2.4)
 
 
-
-> **_Example_**
+> #### _Few Examples_
 ```php
-require "helpers.php";
+require "functions.php";
 echo (is_var($var)) ? 'exists' : 'not exists';
 echo encrypt('text', ['p' => 'PrimaryKey', 's' => 'SecondaryKey']);
 echo rand_str();               				// Default & Max Length 40
 
-## Upload File(s) Securely
+# Upload File\s Securely #
 require "upload.php";
 class myClass extends upload {
     function __construct() {
@@ -43,7 +36,7 @@ class myClass extends upload {
         $this->start();
 
         /*
-         * Other Options
+         *  # Other Options #
             $this->new_name = 'Name';
             $this->save = '/save/path';
             $this->min_size = '10';         // in byets
@@ -57,9 +50,9 @@ class myClass extends upload {
     }
 }
 
-## PDO Database Query
-require "db_pdo.php";
-class myClass extends db_pdo {
+# PDO Database Query #
+require "db.php";
+class myClass extends db {
     function __construct() {
         $details = [
             'HOST' => '127.0.0.1',
@@ -84,9 +77,9 @@ class myClass extends db_pdo {
     }
 }
 
-## cURL Function
-require "c_url.php";
-c_url([
+# cURL Function #
+require "curl.php";
+curl([
     'url' => 'https://google.com/'
 
     /*
@@ -114,5 +107,4 @@ function($ch) {
 ```
 
 
-
-> **_License (C) 2013 - 2018 under GNU GPL V2._**
+> ## _License (C) 2019 under GNU GPL V2._

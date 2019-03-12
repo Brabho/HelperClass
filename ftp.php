@@ -1,7 +1,7 @@
 <?php
 
 /*
- * FTP\S Class
+ * FTP / FTPS Class
  */
 
 class ftp {
@@ -20,25 +20,27 @@ class ftp {
 
     public function connect() {
 
-        if (!isset($this->CONNECTION['SECURE'])) {
+        if(!isset($this->CONNECTION['SECURE'])) {
             $this->CONNECTION['SECURE'] = false;
         }
 
-        if (!isset($this->CONNECTION['PORT'])) {
+        if(!isset($this->CONNECTION['PORT'])) {
             $this->CONNECTION['PORT'] = '21';
         }
 
-        if (!isset($this->CONNECTION['TIMEOUT'])) {
+        if(!isset($this->CONNECTION['TIMEOUT'])) {
             $this->CONNECTION['TIMEOUT'] = '86400';
         }
 
-        if ($this->CONNECTION['SECURE'] === true) {
-            $this->conn = ftp_ssl_connect($this->CONNECTION['HOST'], $this->CONNECTION['PORT'], $this->CONNECTION['TIMEOUT']);
+        if($this->CONNECTION['SECURE'] === true) {
+            $this->conn = ftp_ssl_connect($this->CONNECTION['HOST'], $this->CONNECTION['PORT'],
+                $this->CONNECTION['TIMEOUT']);
         } else {
-            $this->conn = ftp_connect($this->CONNECTION['HOST'], $this->CONNECTION['PORT'], $this->CONNECTION['TIMEOUT']);
+            $this->conn = ftp_connect($this->CONNECTION['HOST'], $this->CONNECTION['PORT'],
+                $this->CONNECTION['TIMEOUT']);
         }
 
-        if ($this->conn) {
+        if($this->conn) {
             echo 'yes';
             return $this->conn;
         } else {
@@ -52,7 +54,7 @@ class ftp {
 
     public function login() {
         $this->login = ftp_login($this->conn, $this->CONNECTION['USER'], $this->CONNECTION['PASS']);
-        if ($this->login) {
+        if($this->login) {
             return $this->login;
         }
         return false;
@@ -96,7 +98,7 @@ class ftp {
      */
 
     public function close() {
-        if (isset($this->conn)) {
+        if(isset($this->conn)) {
             ftp_close($this->conn);
         }
     }

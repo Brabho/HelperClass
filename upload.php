@@ -2,7 +2,7 @@
 
 /*
  * Upload Class
- * Securely upload File(s)
+ * Securely upload File\s
  */
 
 class upload {
@@ -34,7 +34,8 @@ class upload {
     }
 
     private function files($key) {
-        return (isset($this->multi) && is_numeric($this->multi)) ? $_FILES[$this->file_name][$key][$this->multi] : $_FILES[$this->file_name][$key];
+        return (isset($this->multi) && is_numeric($this->multi)) ? $_FILES[$this->file_name][$key][$this->multi] :
+            $_FILES[$this->file_name][$key];
     }
 
     private function extension($file) {
@@ -52,7 +53,7 @@ class upload {
 
     private function check1() {
 
-        if (!is_uploaded_file($this->files('tmp_name'))) {
+        if(!is_uploaded_file($this->files('tmp_name'))) {
             $this->status[0] = 'fail';
             $this->status['reason'] = 'attack_upload';
             $this->status['where'] = 'check1';
@@ -60,8 +61,8 @@ class upload {
             $this->status['details'] = $_FILES[$this->file_name];
         }
 
-        if (isset($this->mime) && is_array($this->mime)) {
-            if (!in_array($this->files('type'), $this->mime)) {
+        if(isset($this->mime) && is_array($this->mime)) {
+            if(!in_array($this->files('type'), $this->mime)) {
                 $this->status[0] = 'fail';
                 $this->status['reason'] = 'wrong_mime';
                 $this->status['where'] = 'check1';
@@ -69,8 +70,8 @@ class upload {
         }
         $this->compare['type'] = $this->files('type');
 
-        if (isset($this->extension) && is_array($this->extension)) {
-            if (!in_array($this->extension($this->files('name')), $this->extension)) {
+        if(isset($this->extension) && is_array($this->extension)) {
+            if(!in_array($this->extension($this->files('name')), $this->extension)) {
                 $this->status[0] = 'fail';
                 $this->status['reason'] = 'wrong_extension';
                 $this->status['where'] = 'check1';
@@ -78,18 +79,18 @@ class upload {
         }
         $this->compare['extension'] = $this->extension($this->files('name'));
 
-        if ($this->files('size') < $this->min_size) {
+        if($this->files('size') < $this->min_size) {
             $this->status[0] = 'fail';
             $this->status['reason'] = 'small_size';
             $this->status['where'] = 'check1';
-        } elseif ($this->files('size') > $this->max_size) {
+        } elseif($this->files('size') > $this->max_size) {
             $this->status[0] = 'fail';
             $this->status['reason'] = 'big_size';
             $this->status['where'] = 'check1';
         }
         $this->compare['size'] = $this->files('size');
 
-        if ($this->files('error') !== UPLOAD_ERR_OK || $this->files('error') > 0) {
+        if($this->files('error') !== UPLOAD_ERR_OK || $this->files('error') > 0) {
             $this->status[0] = 'fail';
             $this->status['reason'] = 'header';
             $this->status['where'] = 'check1';
@@ -98,11 +99,11 @@ class upload {
 
     private function progress() {
         $this->check1();
-        if ($this->status[0] !== 'fail') {
+        if($this->status[0] !== 'fail') {
 
-            if (isset($this->space)) {
+            if(isset($this->space)) {
                 $this->name = preg_replace('/\s/', $this->space, $this->files('name'));
-            } elseif (isset($this->new_name)) {
+            } elseif(isset($this->new_name)) {
                 $this->name = $this->new_name . '.' . $this->compare['extension'];
             } else {
                 $this->name = $this->files('name');
@@ -111,8 +112,8 @@ class upload {
             $this->status['name'] = $this->name;
             $this->status['path'] = $this->save . $this->name;
 
-            if (file_exists($this->status['path'])) {
-                if ($this->overwrite === true) {
+            if(file_exists($this->status['path'])) {
+                if($this->overwrite === true) {
                     move_uploaded_file($this->files('tmp_name'), $this->status['path']);
                 } else {
                     $this->status[0] = 'fail';
@@ -127,27 +128,27 @@ class upload {
 
     private function check2() {
         $this->progress();
-        if ($this->status[0] !== 'fail') {
+        if($this->status[0] !== 'fail') {
 
-            if (filesize($this->status['path']) !== $this->compare['size']) {
+            if(filesize($this->status['path']) !== $this->compare['size']) {
                 $this->status[0] = 'fail';
                 $this->status['reason'] = 'size_changed';
                 $this->status['where'] = 'check2';
             }
 
-            if ($this->mime($this->status['path']) !== $this->compare['type']) {
+            if($this->mime($this->status['path']) !== $this->compare['type']) {
                 $this->status[0] = 'fail';
                 $this->status['reason'] = 'type_changed';
                 $this->status['where'] = 'check2';
             }
 
-            if ($this->extension($this->status['path']) !== $this->compare['extension']) {
+            if($this->extension($this->status['path']) !== $this->compare['extension']) {
                 $this->status[0] = 'fail';
                 $this->status['reason'] = 'extension_changed';
                 $this->status['where'] = 'check2';
             }
 
-            if ($this->status[0] === 'fail') {
+            if($this->status[0] === 'fail') {
                 unlink($this->status['path']);
             }
         }

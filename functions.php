@@ -1,7 +1,6 @@
 <?php
 
 /*
- * Helper Class
  * Custom & Mod Functions
  */
 
@@ -18,7 +17,10 @@ function is_var(&$var) {
  */
 
 function is_arr(&$var, $key) {
-    return (isset($var) && is_array($var) && array_key_exists($key, $var) && !is_null($var[$key]) && $var[$key] && !empty($var[$key]));
+    return (isset($var) && is_array($var) &&
+        array_key_exists($key, $var) &&
+        !is_null($var[$key]) &&
+        $var[$key] && !empty($var[$key]));
 }
 
 /*
@@ -48,11 +50,11 @@ function br2nl($str) {
 function virus_check($path, $arr = []) {
     $path = escapeshellarg($path);
 
-    if (!isset($arr['options'])) {
+    if(!isset($arr['options'])) {
         $arr['options'] = '-r -a -z';
     }
 
-    if (isset($arr['remove']) && $arr['remove'] === true) {
+    if(isset($arr['remove']) && $arr['remove'] === true) {
         $arr['options'] .= ' --remove';
     }
 
@@ -66,8 +68,8 @@ function virus_check($path, $arr = []) {
 
     $count = count($output) - 1;
     $count_to = (int) $count - 8;
-    for ($i = $count; $i > $count_to; $i--) {
-        if (preg_match('@Infected files: @i', $output[$i])) {
+    for($i = $count; $i > $count_to; $i--) {
+        if(preg_match('@Infected files: @i', $output[$i])) {
             $result['virus'] = (int) preg_replace('@[^0-9]@i', '', $output[$i]);
             break;
         }
@@ -84,7 +86,7 @@ function virus_check($path, $arr = []) {
  */
 
 function is_xreq() {
-    if (array_key_exists('HTTP_X_REQUESTED_WITH', $_SERVER) ||
+    if(array_key_exists('HTTP_X_REQUESTED_WITH', $_SERVER) ||
         array_key_exists('X-Requested-With', $_SERVER)) {
 
         return true;
@@ -98,11 +100,11 @@ function is_xreq() {
 
 function redirect($link, $code = 302, $refresh = false, $replace = true) {
     ob_start();
-    while (ob_get_contents()) {
+    while(ob_get_contents()) {
         ob_end_clean();
     }
 
-    if ($refresh) {
+    if($refresh) {
         $to_link = 'Refresh: ' . $refresh . '; url=' . $link;
     } else {
         $to_link = 'Location: ' . $link;
@@ -117,10 +119,10 @@ function redirect($link, $code = 302, $refresh = false, $replace = true) {
  */
 
 function date_time($zone = null, $time = null, $ptrn = 'd-m-Y h:i:sa') {
-    if (isset($zone)) {
+    if(isset($zone)) {
         date_default_timezone_set($zone);
     }
-    if (!isset($time)) {
+    if(!isset($time)) {
         $time = time();
     }
     return date($ptrn, $time);
@@ -131,15 +133,15 @@ function date_time($zone = null, $time = null, $ptrn = 'd-m-Y h:i:sa') {
  */
 
 function time_ago($time) {
-    $periods = array ('second', 'minute', 'hour', 'day', 'week', 'month', 'year', 'decade');
-    $lengths = array ('60', '60', '24', '7', '4.35', '12', '10');
+    $periods = ['second', 'minute', 'hour', 'day', 'week', 'month', 'year', 'decade'];
+    $lengths = ['60', '60', '24', '7', '4.35', '12', '10'];
     $now = time();
     $difference = $now - $time;
-    for ($j = 0; $difference >= $lengths[$j] && $j < count($lengths) - 1; $j++) {
+    for($j = 0; $difference >= $lengths[$j] && $j < count($lengths) - 1; $j++) {
         $difference /= $lengths[$j];
     }
     $difference = round($difference);
-    if ($difference != 1) {
+    if($difference != 1) {
         $periods[$j] .= 's';
     }
     return $difference . ' ' . $periods[$j];
@@ -150,14 +152,14 @@ function time_ago($time) {
  */
 
 function download($file, $param = []) {
-    if (file_exists($file)) {
-        while (ob_get_contents()) {
+    if(file_exists($file)) {
+        while(ob_get_contents()) {
             ob_end_clean();
         }
-        if (!array_key_exists('file_name', $param)) {
+        if(!array_key_exists('file_name', $param)) {
             $param['file_name'] = ucwords(strtolower(basename($file)));
         }
-        if (!array_key_exists('file_type', $param)) {
+        if(!array_key_exists('file_type', $param)) {
             $param['type'] = 'application/octet-stream';
         }
         $param['length'] = sprintf("%u", filesize($file));
@@ -188,13 +190,13 @@ function download($file, $param = []) {
 
 function mk_dir($path) {
     $path = $path . '/';
-    if (!is_dir($path)) {
+    if(!is_dir($path)) {
         $directory_path = '';
         $directories = explode('/', $path);
         array_pop($directories);
-        foreach ($directories as $directory) {
+        foreach($directories as $directory) {
             $directory_path .= $directory . '/';
-            if (!is_dir($directory_path)) {
+            if(!is_dir($directory_path)) {
                 mkdir($directory_path);
                 chmod($directory_path, 0777);
             }
@@ -207,18 +209,18 @@ function mk_dir($path) {
  */
 
 function cp_dir($src, $dest) {
-    if (!file_exists($dest)) {
+    if(!file_exists($dest)) {
         mkdir($dest);
     }
-    foreach (scandir($src) as $file) {
+    foreach(scandir($src) as $file) {
         $srcfile = trims($src, '/') . '/' . $file;
         $destfile = trims($dest, '/') . '/' . $file;
-        if (!is_readable($srcfile)) {
+        if(!is_readable($srcfile)) {
             continue;
         }
-        if ($file != '.' && $file != '..') {
-            if (is_dir($srcfile)) {
-                if (!file_exists($destfile)) {
+        if($file != '.' && $file != '..') {
+            if(is_dir($srcfile)) {
+                if(!file_exists($destfile)) {
                     mkdir($destfile);
                 }
                 copy($srcfile, $destfile);
@@ -234,11 +236,11 @@ function cp_dir($src, $dest) {
  */
 
 function del_dir($dir) {
-    if (is_dir($dir)) {
+    if(is_dir($dir)) {
         $objects = scandir($dir);
-        foreach ($objects as $object) {
-            if ($object != '.' && $object != '..') {
-                if (filetype($dir . '/' . $object) == 'dir') {
+        foreach($objects as $object) {
+            if($object != '.' && $object != '..') {
+                if(filetype($dir . '/' . $object) == 'dir') {
                     del($dir . '/' . $object);
                 } else {
                     unlink($dir . '/' . $object);
@@ -255,10 +257,10 @@ function del_dir($dir) {
  */
 
 function dir_size($dir) {
-    if (is_dir($dir)) {
+    if(is_dir($dir)) {
         $size = 0;
-        foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir)) as $file) {
-            if ($file->getFileName() != '..' && $file->getFileName() != '.') {
+        foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir)) as $file) {
+            if($file->getFileName() != '..' && $file->getFileName() != '.') {
                 $size += $file->getSize();
             }
         }
@@ -286,20 +288,20 @@ function uri_info($link, $ip = false) {
     $allarr = parse_url($link);
     $domain = (!array_key_exists('host', $allarr)) ? $allarr['path'] : $allarr['host'];
 
-    if (is_var($allarr['query'])) {
+    if(is_var($allarr['query'])) {
 
         $queries = explode('&', $allarr['query']);
         $allarr['query'] = [];
 
-        foreach ($queries as $query) {
+        foreach($queries as $query) {
             $sq = explode('=', $query);
-            if (isset($sq[0], $sq[1])) {
+            if(isset($sq[0], $sq[1])) {
                 $allarr['query'][$sq[0]] = $sq[1];
             }
         }
     }
 
-    if ($ip) {
+    if($ip) {
         $allarr['ip'] = gethostbyname($domain);
     }
 
@@ -317,9 +319,9 @@ function slug($text, $case = false, $charset = 'utf-8') {
     $text = preg_replace('~&[^;]+;~', '', $text);
     $text = preg_replace('~[\s!*\'();:@&=+$,/?%#[\]]+~', '-', $text);
 
-    if ($case === 'up') {
+    if($case === 'up') {
         return strtoupper($text);
-    } elseif ($case === 'low') {
+    } elseif($case === 'low') {
         return strtolower($text);
     } else {
         return $text;
@@ -329,10 +331,9 @@ function slug($text, $case = false, $charset = 'utf-8') {
 /*
  * Get Email, Phone, Image, Link/URI By Regex
  */
-
 function by_ptn($subject, $count = 'all', $pattern = null, $by = 'email') {
-    if (!isset($pattern)) {
-        switch ($by) {
+    if(!isset($pattern)) {
+        switch($by) {
             case 'email':
                 $pattern = '/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/i';
                 break;
@@ -346,32 +347,32 @@ function by_ptn($subject, $count = 'all', $pattern = null, $by = 'email') {
                 break;
 
             case 'url':
-                $pattern = '@(http|https|ftp|ftps)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?@i';
+                $pattern = '@(http|https|ftp|ftps|sftp)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?@i';
                 break;
         }
     }
 
     preg_match_all($pattern, $subject, $matches);
-    if (array_key_exists(0, $matches)) {
+    if(array_key_exists(0, $matches)) {
 
         $matches = $matches[0];
 
         /*
          * By Phone Only
          */
-        if (!isset($pattern) && $by === 'phone') {
-            for ($i = 0; $i < count($matches); $i++) {
+        if(!isset($pattern) && $by === 'phone') {
+            for($i = 0; $i < count($matches); $i++) {
 
-                if (!valid_num($matches[$i])) {
+                if(!valid_num($matches[$i])) {
                     unset($matches[$i]);
                 }
             }
         }
 
-        if ($count === 'all') {
+        if($count === 'all') {
             return $matches;
         } else {
-            if (array_key_exists($count, $matches)) {
+            if(array_key_exists($count, $matches)) {
                 return $matches[$count];
             }
             return false;
@@ -387,13 +388,13 @@ function by_ptn($subject, $count = 'all', $pattern = null, $by = 'email') {
  * arr['algo']  = Algorithm / Method
  */
 function encrypt($str, $arr = []) {
-    if (!isset($arr['p'])) {
+    if(!isset($arr['p'])) {
         $arr['p'] = 'PrimaryKey';
     }
-    if (!isset($arr['s'])) {
+    if(!isset($arr['s'])) {
         $arr['s'] = 'SecondaryKey';
     }
-    if (!isset($arr['algo'])) {
+    if(!isset($arr['algo'])) {
         $arr['algo'] = 'aes-256-cbc';
     }
 
@@ -413,13 +414,13 @@ function encrypt($str, $arr = []) {
  * arr['algo']  = Algorithm / Method
  */
 function decrypt($str, $arr = []) {
-    if (!isset($arr['p'])) {
+    if(!isset($arr['p'])) {
         $arr['p'] = 'PrimaryKey';
     }
-    if (!isset($arr['s'])) {
+    if(!isset($arr['s'])) {
         $arr['s'] = 'SecondaryKey';
     }
-    if (!isset($arr['algo'])) {
+    if(!isset($arr['algo'])) {
         $arr['algo'] = 'aes-256-cbc';
     }
 
@@ -438,7 +439,7 @@ function decrypt($str, $arr = []) {
  * Default 40
  */
 function rand_num($length = 40) {
-    for ($i = -1; $i <= 4; $i++) {
+    for($i = -1; $i <= 4; $i++) {
         $bytes = openssl_random_pseudo_bytes(8, $crypto_strong);
         $num = hexdec(bin2hex($bytes));
     }
@@ -460,8 +461,8 @@ function rand_str($length = 40, $only = null) {
     $str = base64_encode(serialize($str));
     $str = hash('sha512', $str);
 
-    if (isset($only)) {
-        switch ($only) {
+    if(isset($only)) {
+        switch($only) {
 
             case 'alpha':
                 $str = preg_replace('@[^a-zA-Z]@', '', $str);
@@ -480,7 +481,7 @@ function rand_str($length = 40, $only = null) {
  */
 function rand_crypt($bit = 128) {
     $bit = $bit / 2;
-    for ($i = -1; $i <= 4; $i++) {
+    for($i = -1; $i <= 4; $i++) {
         $bytes = openssl_random_pseudo_bytes($bit, $crypto_strong);
         $crypt = bin2hex($bytes);
     }
@@ -502,7 +503,7 @@ function rand_char($length = 40) {
  */
 function req_ps($exp = '3') {
 
-    if ((array_key_exists('HTTPS', $_SERVER) && ($_SERVER['HTTPS'] === 'on' || $_SERVER['HTTPS'] === 1)) ||
+    if((array_key_exists('HTTPS', $_SERVER) && ($_SERVER['HTTPS'] === 'on' || $_SERVER['HTTPS'] === 1)) ||
         (array_key_exists('HTTP_X_FORWARDED_PROTO', $_SERVER) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')) {
 
         $protocol = 'https://';
@@ -513,7 +514,7 @@ function req_ps($exp = '3') {
     $uri = hash('sha512', $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
     $comp = $uri . '|' . time();
 
-    if (!isset($_SESSION['req_ps'])) {
+    if(!isset($_SESSION['req_ps'])) {
         $_SESSION['req_ps'] = $comp;
     }
 
@@ -544,7 +545,7 @@ function csrf_valid() {
      * Remove Session CSRF Token
      */
 
-    if (isset($_SESSION['csrf_token'])) {
+    if(isset($_SESSION['csrf_token'])) {
         $csrf_token = $_SESSION['csrf_token'];
         $_SESSION['csrf_token'] = null;
         unset($_SESSION['csrf_token']);
@@ -552,8 +553,8 @@ function csrf_valid() {
         return false;
     }
 
-    if (isset($_POST['csrf_token'])) {
-        if ($csrf_token === $_POST['csrf_token']) {
+    if(isset($_POST['csrf_token'])) {
+        if($csrf_token === $_POST['csrf_token']) {
             return true;
         }
         return false;
@@ -565,7 +566,7 @@ function csrf_valid() {
  * Html Chatset Convert
  */
 function htm_cvt($content, $arr = []) {
-    if (!array_key_exists('charset', $arr)) {
+    if(!array_key_exists('charset', $arr)) {
         $arr['charset'] = 'utf-8';
     }
     return iconv(mb_detect_encoding($content, mb_detect_order(), true), $arr['charset'] . '//IGNORE', $content);
@@ -576,22 +577,22 @@ function htm_cvt($content, $arr = []) {
  */
 function htm_en($content, $arr = []) {
 
-    if (!array_key_exists('strip', $arr)) {
+    if(!array_key_exists('strip', $arr)) {
         $arr['strip'] = false;
     }
-    if (!array_key_exists('allow', $arr)) {
+    if(!array_key_exists('allow', $arr)) {
         $arr['allow'] = '';
     }
-    if (!array_key_exists('encode', $arr)) {
+    if(!array_key_exists('encode', $arr)) {
         $arr['encode'] = 'specialchars';
     }
-    if (!array_key_exists('type', $arr)) {
+    if(!array_key_exists('type', $arr)) {
         $arr['type'] = 'encode';
     }
-    if (!array_key_exists('flag', $arr)) {
+    if(!array_key_exists('flag', $arr)) {
         $arr['flag'] = ENT_QUOTES;
     }
-    if (!array_key_exists('charset', $arr)) {
+    if(!array_key_exists('charset', $arr)) {
         $arr['charset'] = 'utf-8';
     }
 
@@ -603,16 +604,16 @@ function htm_en($content, $arr = []) {
     /*
      * Strip Tags
      */
-    if ($arr['strip'] === true) {
+    if($arr['strip'] === true) {
         $content = strip_tags($content, $arr['allow']);
     }
 
     /*
      * Type Encode
      */
-    if ($arr['type'] === 'encode') {
+    if($arr['type'] === 'encode') {
 
-        switch ($arr['encode']) {
+        switch($arr['encode']) {
             case 'specialchars':
                 $content = htmlspecialchars($content, $arr['flag'], $arr['charset']);
                 break;
@@ -627,7 +628,7 @@ function htm_en($content, $arr = []) {
         /*
          * Type Decode
          */
-        switch ($arr['encode']) {
+        switch($arr['encode']) {
             case 'specialchars':
                 $content = htmlspecialchars_decode($content, $arr['flag']);
                 break;
@@ -660,7 +661,7 @@ function trims($content, $space = null, $delmi = " ,\/\t\n\r\\") {
     $content = ltrim($content, $delmi);
     $content = rtrim($content, $delmi);
 
-    if (isset($space)) {
+    if(isset($space)) {
         $content = preg_replace('/\s+/', $space, $content);
     }
     return $content;
@@ -673,13 +674,13 @@ function trims($content, $space = null, $delmi = " ,\/\t\n\r\\") {
 function tags_strip($text, $tags = '', $invert = false) {
     preg_match_all('/<(.+?)[\s]*\/?[\s]*>/si', trims($tags), $tags);
     $tags = array_unique($tags[1]);
-    if (is_array($tags) && count($tags) > 0) {
-        if ($invert == false) {
+    if(is_array($tags) && count($tags) > 0) {
+        if($invert == false) {
             return preg_replace('@<(?!(?:' . implode('|', $tags) . ')\b)(\w+)\b.*?>.*?</\1>@si', '', $text);
         } else {
             return preg_replace('@<(' . implode('|', $tags) . ')\b.*?>.*?</\1>@si', '', $text);
         }
-    } elseif ($invert == false) {
+    } elseif($invert == false) {
         return preg_replace('@<(\w+)\b.*?>.*?</\1>@si', '', $text);
     }
     return $text;
@@ -713,31 +714,32 @@ function uc_first($str) {
  */
 
 function zip_add($source, $destiny) {
-    if (!extension_loaded('zip') || !file_exists($source)) {
+    if(!extension_loaded('zip') || !file_exists($source)) {
         return false;
     }
     $source = str_replace('\\', '/', $source);
     $zip = new ZipArchive();
-    if (!$zip->open($destiny, ZIPARCHIVE::CREATE)) {
+    if(!$zip->open($destiny, ZIPARCHIVE::CREATE)) {
         return false;
     }
 
-    if (is_dir($source)) {
-        $files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($source), RecursiveIteratorIterator::SELF_FIRST);
-        foreach ($files as $file) {
+    if(is_dir($source)) {
+        $files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($source),
+            RecursiveIteratorIterator::SELF_FIRST);
+        foreach($files as $file) {
 
             $file = str_replace('\\', '/', $file);
-            if ($file === '.' || $file === '..') {
+            if($file === '.' || $file === '..') {
                 continue;
             }
 
-            if (is_dir($file)) {
+            if(is_dir($file)) {
                 $zip->addEmptyDir(str_replace($source . '/', '', $file . '/'));
-            } elseif (is_file($file)) {
+            } elseif(is_file($file)) {
                 $zip->addFromString(str_replace($source . '/', '', $file), file_get_contents($file));
             }
         }
-    } elseif (is_file($source)) {
+    } elseif(is_file($source)) {
         $zip->addFromString(basename($source), file_get_contents($source));
     }
     return $zip->close();
@@ -749,7 +751,7 @@ function zip_add($source, $destiny) {
 
 function zip_extract($source, $destiny) {
     $zip = new ZipArchive;
-    if ($zip->open($source)) {
+    if($zip->open($source)) {
         $zip->extractTo($destiny);
         $zip->close();
         return true;
@@ -762,7 +764,7 @@ function zip_extract($source, $destiny) {
  */
 
 function valid_alpha($alpha, $let = 'all') {
-    switch ($let) {
+    switch($let) {
         case 'all':
             return (preg_match_all('@^[a-zA-Z]+$@i', $alpha));
             break;
@@ -790,10 +792,10 @@ function valid_num($num) {
  */
 
 function valid_phone($phone) {
-    if (valid_num($phone)) {
+    if(valid_num($phone)) {
         $phone_nums = by_ptn($phone, 'all', null, 'phone');
 
-        if (array_key_exists(0, $phone_nums)) {
+        if(array_key_exists(0, $phone_nums)) {
             return $phone_nums;
         }
         return false;
@@ -806,10 +808,10 @@ function valid_phone($phone) {
  */
 
 function valid_email($email, $host = false) {
-    if (filter_var($email, FILTER_VALIDATE_EMAIL) &&
+    if(filter_var($email, FILTER_VALIDATE_EMAIL) &&
         preg_match('/^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i', $email)) {
 
-        if ($host === true) {
+        if($host === true) {
             return (checkdnsrr(array_pop(explode("@", $email)), "MX"));
         }
         return true;
@@ -823,7 +825,7 @@ function valid_email($email, $host = false) {
 
 function valid_url($str, $qstr = false) {
     $url = urldecode($str);
-    if ($qstr === true) {
+    if($qstr === true) {
         return (filter_var($url, FILTER_VALIDATE_URL, FILTER_FLAG_QUERY_REQUIRED));
     } else {
         return (filter_var($url, FILTER_VALIDATE_URL));
@@ -835,8 +837,8 @@ function valid_url($str, $qstr = false) {
  */
 function get_all_headers() {
     $headers = [];
-    foreach ($_SERVER as $name => $value) {
-        if (substr($name, 0, 5) === 'HTTP_') {
+    foreach($_SERVER as $name => $value) {
+        if(substr($name, 0, 5) === 'HTTP_') {
             $headers[str_ireplace(' ', '-', ucwords(strtolower(str_ireplace('_', ' ', substr($name, 5)))))] = $value;
         }
     }
@@ -851,31 +853,31 @@ function dom_load($html, $arr = []) {
     ob_start();
     ob_end_clean();
 
-    if (!isset($arr['version'])) {
+    if(!isset($arr['version'])) {
         $arr['version'] = null;
     }
-    if (!isset($arr['charset'])) {
+    if(!isset($arr['charset'])) {
         $arr['charset'] = 'utf-8';
     }
 
     $dom = new DOMDocument($arr['version'], $arr['charset']);
 
-    if (isset($arr['white'])) {
+    if(isset($arr['white'])) {
         $dom->preserveWhiteSpace = $arr['white'];
     }
 
-    if (isset($arr['format'])) {
+    if(isset($arr['format'])) {
         $dom->formatOutput = $arr['format'];
     }
 
-    if (isset($arr['charset'])) {
+    if(isset($arr['charset'])) {
         mb_convert_encoding($html, 'HTML-ENTITIES', $arr['charset']);
     }
 
     libxml_use_internal_errors(true);
-    $dom->strictErrorChecking = FALSE;
+    $dom->strictErrorChecking = false;
 
-    if ($dom->loadHTML($html)) {
+    if($dom->loadHTML($html)) {
         libxml_clear_errors();
         return $dom;
     }
@@ -889,17 +891,17 @@ function dom_load($html, $arr = []) {
 function dom_metatags($html, $link = null) {
     $metaTags = [];
 
-    if (isset($link) && valid_url($link)) {
+    if(isset($link) && valid_url($link)) {
         $metaTags = get_meta_tags($link);
     }
 
-    if ($load = dom_load($html)) {
+    if($load = dom_load($html)) {
 
         $title = $load->getElementsByTagName('title');
         $metaTags['title'] = $title->item(0)->nodeValue;
 
-        foreach ($load->getElementsByTagName('meta') as $node) {
-            if (preg_match("@og:+([a-z-_])+@", $node->getAttribute('property'))) {
+        foreach($load->getElementsByTagName('meta') as $node) {
+            if(preg_match("@og:+([a-z-_])+@", $node->getAttribute('property'))) {
                 $metaTags[$node->getAttribute('property')] = $node->getAttribute('content');
             }
         }
@@ -913,10 +915,10 @@ function dom_metatags($html, $link = null) {
 
 function dom_favicon($html) {
     $matches = '';
-    if ($load = dom_load($html)) {
-        foreach ($load->getElementsByTagName('link') as $node) {
+    if($load = dom_load($html)) {
+        foreach($load->getElementsByTagName('link') as $node) {
 
-            if (strtolower($node->getAttribute('rel')) === 'icon' ||
+            if(strtolower($node->getAttribute('rel')) === 'icon' ||
                 strtolower($node->getAttribute('rel')) === 'shortcut icon') {
 
                 $matches = $node->getAttribute('href');
@@ -933,14 +935,14 @@ function dom_favicon($html) {
 
 function dom_hrefs($html, $num = 'all') {
     $matches = [];
-    if ($load = dom_load($html)) {
-        foreach ($load->getElementsByTagName('a') as $node) {
+    if($load = dom_load($html)) {
+        foreach($load->getElementsByTagName('a') as $node) {
             $matches[] = $node->getAttribute('href');
         }
-        if ($num === 'all') {
+        if($num === 'all') {
             return $matches;
         } else {
-            if (isset($matches[$num])) {
+            if(isset($matches[$num])) {
                 return $matches[$num];
             }
             return false;
@@ -955,16 +957,16 @@ function dom_hrefs($html, $num = 'all') {
 
 function dom_scripts($html, $num = 'all', $type = 'text/javascript') {
     $matches = [];
-    if ($load = dom_load($html)) {
-        foreach ($load->getElementsByTagName('script') as $node) {
-            if (strtolower($node->getAttribute('type')) === $type) {
+    if($load = dom_load($html)) {
+        foreach($load->getElementsByTagName('script') as $node) {
+            if(strtolower($node->getAttribute('type')) === $type) {
                 $matches[] = $node->getAttribute('src');
             }
         }
-        if ($num === 'all') {
+        if($num === 'all') {
             return $matches;
         } else {
-            if (isset($matches[$num])) {
+            if(isset($matches[$num])) {
                 return $matches[$num];
             }
             return false;
@@ -979,18 +981,18 @@ function dom_scripts($html, $num = 'all', $type = 'text/javascript') {
 
 function dom_styles($html, $num = 'all') {
     $matches = '';
-    if ($load = dom_load($html)) {
-        foreach ($load->getElementsByTagName('link') as $node) {
-            if (strtolower($node->getAttribute('rel')) === 'stylesheet' &&
+    if($load = dom_load($html)) {
+        foreach($load->getElementsByTagName('link') as $node) {
+            if(strtolower($node->getAttribute('rel')) === 'stylesheet' &&
                 strtolower($node->getAttribute('tyle')) === 'text/css') {
 
                 $matches[] = $node->getAttribute('href');
             }
         }
-        if ($num === 'all') {
+        if($num === 'all') {
             return $matches;
         } else {
-            if (isset($matches[$num])) {
+            if(isset($matches[$num])) {
                 return $matches[$num];
             }
             return false;
@@ -1006,17 +1008,17 @@ function dom_styles($html, $num = 'all') {
 function get_comments($file_name, $count = 'all') {
     $tokens = token_get_all(file_get_contents($file_name));
     $comments = [];
-    foreach ($tokens as $token) {
-        if ($token[0] == T_COMMENT || $token[0] == T_DOC_COMMENT) {
-            if (isset($token[1])) {
+    foreach($tokens as $token) {
+        if($token[0] == T_COMMENT || $token[0] == T_DOC_COMMENT) {
+            if(isset($token[1])) {
                 $comments[] = $token[1];
             } else {
                 $no_comment = true;
             }
         }
     }
-    if (!isset($no_comment)) {
-        if ($count === 'all') {
+    if(!isset($no_comment)) {
+        if($count === 'all') {
             return $comments;
         } else {
             return $comments[$count];
@@ -1030,10 +1032,10 @@ function get_comments($file_name, $count = 'all') {
  */
 
 function var_clean($force = false) {
-    foreach (array_keys(get_defined_vars()) as $var) {
+    foreach(array_keys(get_defined_vars()) as $var) {
 
-        if ($force === false) {
-            if ($var === 'GLOBALS' || $var === '_POST' || $var === '_GET' || $var === '_COOKIE' ||
+        if($force === false) {
+            if($var === 'GLOBALS' || $var === '_POST' || $var === '_GET' || $var === '_COOKIE' ||
                 $var === '_FILES' || $var === '_REQUEST' || $var === '_SERVER' || $var === '_ENV') {
 
                 continue;
@@ -1052,7 +1054,7 @@ function var_clean($force = false) {
 
 function str2hex($string) {
     $hex = '';
-    for ($i = 0; $i < strlen($string); $i++) {
+    for($i = 0; $i < strlen($string); $i++) {
         $ord = ord($string[$i]);
         $hexCode = dechex($ord);
         $hex .= substr('0' . $hexCode, -2);
@@ -1066,7 +1068,7 @@ function str2hex($string) {
 
 function hex2str($hex) {
     $string = '';
-    for ($i = 0; $i < strlen($hex) - 1; $i += 2) {
+    for($i = 0; $i < strlen($hex) - 1; $i += 2) {
         $string .= chr(hexdec($hex[$i] . $hex[$i + 1]));
     }
     return $string;
@@ -1077,7 +1079,7 @@ function hex2str($hex) {
  */
 
 function length_mk($val) {
-    if ($val > 1000) {
+    if($val > 1000) {
         $val = round(($val / 1000), 2);
         $val = ($val > 1000) ? round(($val / 1000), 2) . 'M' : $val . 'K';
     }
@@ -1089,7 +1091,7 @@ function length_mk($val) {
  */
 
 function format_bits($the_size) {
-    switch ($the_size) {
+    switch($the_size) {
         case ($the_size < 1024):
             return $the_size . 'B';
             break;
@@ -1180,7 +1182,7 @@ function json_min($json) {
  * Get User Referer
  */
 function usr_referer() {
-    if (array_key_exists('HTTP_REFERER', $_SERVER) &&
+    if(array_key_exists('HTTP_REFERER', $_SERVER) &&
         !is_null($_SERVER['HTTP_REFERER']) &&
         strlen($_SERVER['HTTP_REFERER']) > 0) {
 
@@ -1200,29 +1202,29 @@ function ip_d($uip = false) {
     $ip[0] = false;
     $ip['type'] = false;
 
-    if ($uip) {
+    if($uip) {
         $ip[0] = $uip;
     } else {
 
-        if (is_arr($_SERVER, 'HTTP_CLIENT_IP')) {
+        if(is_arr($_SERVER, 'HTTP_CLIENT_IP')) {
 
             $ip[0] = htm_en($_SERVER['HTTP_CLIENT_IP']);
-        } elseif (is_arr($_SERVER, 'HTTP_X_FORWARDED_FOR')) {
+        } elseif(is_arr($_SERVER, 'HTTP_X_FORWARDED_FOR')) {
 
             $ip[0] = htm_en($_SERVER['HTTP_X_FORWARDED_FOR']);
-        } elseif (is_arr($_SERVER, 'HTTP_X_REAL_IP')) {
+        } elseif(is_arr($_SERVER, 'HTTP_X_REAL_IP')) {
 
             $ip[0] = htm_en($_SERVER['HTTP_X_REAL_IP']);
-        } elseif (is_arr($_SERVER, 'REMOTE_ADDR')) {
+        } elseif(is_arr($_SERVER, 'REMOTE_ADDR')) {
 
             $ip[0] = htm_en($_SERVER['REMOTE_ADDR']);
         }
     }
 
-    if ($ip[0]) {
-        if (filter_var($ip[0], FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
+    if($ip[0]) {
+        if(filter_var($ip[0], FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
             $ip['type'] = 'ipv4';
-        } elseif (filter_var($ip[0], FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+        } elseif(filter_var($ip[0], FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
             $ip['type'] = 'ipv6';
         } else {
             $ip[0] = false;
@@ -1258,8 +1260,8 @@ function usr_proxy() {
         'PROXY-AGENT',
         'VIA'
     ];
-    foreach ($headers as $header) {
-        if (isset($_SERVER[$header])) {
+    foreach($headers as $header) {
+        if(isset($_SERVER[$header])) {
             $r = $_SERVER[$header];
         }
     }
@@ -1287,8 +1289,8 @@ function usr_browser() {
         '@mobile@i'          => 'Handheld Browser',
         '@UCBrowser|UCWEB@i' => 'UC Browser'
     ];
-    foreach ($browser_arr as $regex => $value) {
-        if (preg_match_all($regex, $_SERVER['HTTP_USER_AGENT'], $matchs)) {
+    foreach($browser_arr as $regex => $value) {
+        if(preg_match_all($regex, $_SERVER['HTTP_USER_AGENT'], $matchs)) {
             $browser = $value;
             break;
         }
@@ -1329,8 +1331,8 @@ function usr_os() {
         '@blackberry@i'         => 'BlackBerry',
         '@webos|wos@i'          => 'Mobile'
     ];
-    foreach ($os_arr as $regex => $value) {
-        if (preg_match($regex, $_SERVER['HTTP_USER_AGENT'])) {
+    foreach($os_arr as $regex => $value) {
+        if(preg_match($regex, $_SERVER['HTTP_USER_AGENT'])) {
             $os = $value;
             break;
         }
@@ -1343,7 +1345,8 @@ function usr_os() {
  * Get User Device is Mobile
  */
 function usr_ismobile() {
-    return preg_match('@kaios|samsungbrowser|samsung|meego|avantgo|playbook|opera m|symbian|smartphone|midp|wap|android|bolt|boost|docomo|fone|blazer|hiptop|phone|mini|tablet|iphone|ipod|ipad|blackberry|webos|wos|UCBrowser|UCWEB|mobile|mobi@i', $_SERVER['HTTP_USER_AGENT']);
+    return preg_match('@kaios|samsungbrowser|samsung|meego|avantgo|playbook|opera m|symbian|smartphone|midp|wap|android|bolt|boost|docomo|fone|blazer|hiptop|phone|mini|tablet|iphone|ipod|ipad|blackberry|webos|wos|UCBrowser|UCWEB|mobile|mobi@i',
+        $_SERVER['HTTP_USER_AGENT']);
 }
 
 /*
@@ -1352,20 +1355,21 @@ function usr_ismobile() {
  */
 function usr_location($ip = null, $geo_api = 'geoplugin') {
 
-    if (!isset($ip)) {
+    if(!isset($ip)) {
         $ip = ip_d()[0];
     }
 
     $location = [];
 
-    switch ($geo_api) {
+    switch($geo_api) {
         case 'geoplugin':
             $location = unserialize(file_get_contents('http://www.geoplugin.net/php.gp?ip=' . $ip));
-            $location['timezone'] = \DateTimeZone::listIdentifiers(\DateTimeZone::PER_COUNTRY, $location['geoplugin_countryCode'])[0];
+            $location['timezone'] = \DateTimeZone::listIdentifiers(\DateTimeZone::PER_COUNTRY,
+                $location['geoplugin_countryCode'])[0];
             break;
 
         case 'ipinfo':
-            $location = json_decode(file_get_contents('http://ipinfo.io/' . $ip), TRUE);
+            $location = json_decode(file_get_contents('http://ipinfo.io/' . $ip), true);
             $location['timezone'] = \DateTimeZone::listIdentifiers(\DateTimeZone::PER_COUNTRY, $location['country'])[0];
             break;
     }

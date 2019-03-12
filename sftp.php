@@ -21,19 +21,19 @@ class sftp {
 
     public function connect() {
 
-        if (!isset($this->CONNECTION['PORT'])) {
+        if(!isset($this->CONNECTION['PORT'])) {
             $this->CONNECTION['PORT'] = 22;
         }
 
-        if (!isset($this->CONNECTION['PERMISSION'])) {
+        if(!isset($this->CONNECTION['PERMISSION'])) {
             $this->CONNECTION['PERMISSION'] = 0777;
         }
 
         $this->conn = ssh2_connect($this->CONNECTION['HOST'], $this->CONNECTION['PORT']);
 
-        if ($this->conn) {
+        if($this->conn) {
 
-            if (ssh2_auth_password($this->conn, $this->CONNECTION['USER'], $this->CONNECTION['PASS'])) {
+            if(ssh2_auth_password($this->conn, $this->CONNECTION['USER'], $this->CONNECTION['PASS'])) {
                 $this->status[0] = 'success';
                 $this->status['conn'] = $this->conn;
             } else {
@@ -53,7 +53,7 @@ class sftp {
      */
 
     public function put($local, $server) {
-        if ($this->status[0] === 'success') {
+        if($this->status[0] === 'success') {
             ssh2_scp_send($this->conn, $local, $server, $this->CONNECTION['PERMISSION']);
         }
     }
@@ -63,7 +63,7 @@ class sftp {
      */
 
     public function get($local, $server) {
-        if ($this->status[0] === 'success') {
+        if($this->status[0] === 'success') {
             ssh2_scp_recv($this->conn, $server, $local);
         }
     }
@@ -73,7 +73,7 @@ class sftp {
      */
 
     public function del($path) {
-        if ($this->status[0] === 'success') {
+        if($this->status[0] === 'success') {
             $sftp = ssh2_sftp($this->conn);
             ssh2_sftp_unlink($sftp, $path);
         }
@@ -84,7 +84,7 @@ class sftp {
      */
 
     public function f_exists($path) {
-        if ($this->status[0] === 'success') {
+        if($this->status[0] === 'success') {
             $sftp = ssh2_sftp($this->conn);
             return file_exists('ssh2.sftp://' . $sftp . $path);
         }

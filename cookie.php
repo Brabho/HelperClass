@@ -11,16 +11,16 @@ class cookie {
      */
     public function set($name, $value, $extime = 86400, $arr = []) {
 
-        if (!array_key_exists('path', $arr)) {
+        if(!array_key_exists('path', $arr)) {
             $arr['path'] = '/';
         }
-        if (!array_key_exists('domain', $arr)) {
+        if(!array_key_exists('domain', $arr)) {
             $arr['domain'] = null;
         }
-        if (!array_key_exists('secure', $arr)) {
+        if(!array_key_exists('secure', $arr)) {
             $arr['secure'] = null;
         }
-        if (!array_key_exists('http', $arr)) {
+        if(!array_key_exists('http', $arr)) {
             $arr['http'] = true;
         }
 
@@ -32,7 +32,8 @@ class cookie {
      * Get Cookie
      */
     public function get($name) {
-        return (array_key_exists($name, $_COOKIE) && $_COOKIE[$name] !== null && !empty($_COOKIE[$name])) ? $_COOKIE[$name] : false;
+        return (array_key_exists($name, $_COOKIE) && $_COOKIE[$name] !== null && !empty($_COOKIE[$name])) ?
+            $_COOKIE[$name] : false;
     }
 
     /*
@@ -47,7 +48,7 @@ class cookie {
      * Remove All Cookies
      */
     public function remove_all($path = '/') {
-        foreach ($_COOKIE as $cookie => $c_val) {
+        foreach($_COOKIE as $cookie => $c_val) {
             setcookie($cookie, '0', time() - 2628000, $path);
         }
     }

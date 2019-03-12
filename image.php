@@ -39,13 +39,13 @@ class image {
      */
     public function check($file, $mime = null) {
 
-        if (isset($mime) && is_array($mime)) {
+        if(isset($mime) && is_array($mime)) {
             $this->mime = $mime;
         }
 
-        if (file_exists($file)) {
+        if(file_exists($file)) {
 
-            if ($this->status['details'] = getimagesize($file)) {
+            if($this->status['details'] = getimagesize($file)) {
                 $this->status['file'] = $file;
                 $this->status['saved'] = $file;
                 $this->status['real_name'] = basename($file);
@@ -56,7 +56,7 @@ class image {
                 $this->status['reason'] = 'not_img';
             }
 
-            if (!in_array($this->status['details']['mime'], $this->mime)) {
+            if(!in_array($this->status['details']['mime'], $this->mime)) {
                 $this->status[0] = 'fail';
                 $this->status['reason'] = 'wrong_mime';
             }
@@ -72,9 +72,9 @@ class image {
      */
     public function convert($file, $to) {
         $this->check($file);
-        if ($this->status[0] !== 'fail') {
+        if($this->status[0] !== 'fail') {
 
-            switch ($to) {
+            switch($to) {
 
                 /*
                  * convert all to jpeg
@@ -126,8 +126,10 @@ class image {
 
                     $output = imagecreatetruecolor($this->status['details'][0], $this->status['details'][1]);
                     $white = imagecolorallocate($output, 255, 255, 255);
-                    imagefilledrectangle($output, 0, 0, $this->status['details'][0], $this->status['details'][1], $white);
-                    imagecopy($output, $image_obj, 0, 0, 0, 0, $this->status['details'][0], $this->status['details'][1]);
+                    imagefilledrectangle($output, 0, 0, $this->status['details'][0], $this->status['details'][1],
+                        $white);
+                    imagecopy($output, $image_obj, 0, 0, 0, 0, $this->status['details'][0],
+                        $this->status['details'][1]);
 
                     imagejpeg($output, $this->real_path($file) . '.jpeg');
                     $this->status['saved'] = $this->real_path($file) . '.jpeg';
@@ -195,13 +197,13 @@ class image {
      */
     public function crop($file, $arr = []) {
         $this->check($file);
-        if (!is_numeric($arr['width']) || !is_numeric($arr['height'])) {
+        if(!is_numeric($arr['width']) || !is_numeric($arr['height'])) {
             $this->status[0] = 'fail';
             $this->status['reason'] = 'wrong_size';
         }
-        if ($this->status[0] !== 'fail') {
+        if($this->status[0] !== 'fail') {
 
-            switch ($this->status['details']['mime']) {
+            switch($this->status['details']['mime']) {
                 case 'image/jpeg':
                     $image = imagecreatefromjpeg($file);
                     $this->status['saved'] = $this->real_path($file) . '.jpeg';
@@ -226,7 +228,7 @@ class image {
                     break;
             }
 
-            if ($this->status[0] !== 'fail') {
+            if($this->status[0] !== 'fail') {
 
                 $width = imagesx($image);
                 $height = imagesy($image);
@@ -234,7 +236,7 @@ class image {
                 $original_aspect = $width / $height;
                 $thumb_aspect = $arr['width'] / $arr['height'];
 
-                if ($original_aspect >= $thumb_aspect) {
+                if($original_aspect >= $thumb_aspect) {
                     $new_height = $arr['height'];
                     $new_width = $width / ($height / $arr['height']);
                 } else {
@@ -243,9 +245,10 @@ class image {
                 }
 
                 $thumb = imagecreatetruecolor($arr['width'], $arr['height']);
-                imagecopyresampled($thumb, $image, 0 - ($new_width - $arr['width']) / 2, 0 - ($new_height - $arr['height']) / 2, 0, 0, $new_width, $new_height, $width, $height);
+                imagecopyresampled($thumb, $image, 0 - ($new_width - $arr['width']) / 2,
+                    0 - ($new_height - $arr['height']) / 2, 0, 0, $new_width, $new_height, $width, $height);
 
-                switch ($this->status['details']['mime']) {
+                switch($this->status['details']['mime']) {
                     case 'image/jpeg':
                         imagejpeg($thumb, $this->status['saved']);
                         break;
@@ -272,20 +275,21 @@ class image {
         $add = $this->check($add);
         $file = $this->check($file);
 
-        if ($file[0] !== 'fail' && $add[0] !== 'fail') {
-            if (!array_key_exists('cx', $arr)) {
+        if($file[0] !== 'fail' && $add[0] !== 'fail') {
+            if(!array_key_exists('cx', $arr)) {
                 $arr['cx'] = 0;
             }
-            if (!array_key_exists('cy', $arr)) {
+            if(!array_key_exists('cy', $arr)) {
                 $arr['cy'] = 0;
             }
-            if (!array_key_exists('opt', $arr)) {
+            if(!array_key_exists('opt', $arr)) {
                 $arr['opacity'] = 100;
             }
 
             $im1 = imagecreatefrompng($file['file']);
             $im2 = imagecreatefrompng($add['file']);
-            imagecopymerge($im1, $im2, $arr['cx'], $arr['cy'], 0, 0, $add['details'][0], $add['details'][1], $arr['opacity']);
+            imagecopymerge($im1, $im2, $arr['cx'], $arr['cy'], 0, 0, $add['details'][0], $add['details'][1],
+                $arr['opacity']);
             imagepng($im1, $file['file'], 9);
             imagedestroy($im1);
             imagedestroy($im2);
@@ -300,13 +304,13 @@ class image {
      * Copy image from URL
      */
     public function url2img($link, $des, $mime = null) {
-        if (isset($mime) && is_array($mime)) {
+        if(isset($mime) && is_array($mime)) {
             $this->mime = $mime;
         }
 
         $headers = get_headers($link, 1);
 
-        if (isset($headers["Content-Type"]) && in_array($headers["Content-Type"], $this->mime)) {
+        if(isset($headers["Content-Type"]) && in_array($headers["Content-Type"], $this->mime)) {
 
             $ext = explode('.', $link);
             $this->status['file'] = $des . '.' . end($ext);
@@ -326,14 +330,14 @@ class image {
      */
     public function save($arr = []) {
 
-        if (array_key_exists('mime', $arr) && is_array($arr['mime'])) {
+        if(array_key_exists('mime', $arr) && is_array($arr['mime'])) {
             $this->mime = $arr['mime'];
         }
 
-        if (array_key_exists('url2img', $arr)) {
+        if(array_key_exists('url2img', $arr)) {
             $this->url2img($arr['url2img']['link'], $arr['url2img']['des']);
 
-            if ($this->status[0] === 'fail') {
+            if($this->status[0] === 'fail') {
                 return $this->status;
             }
 
@@ -342,25 +346,25 @@ class image {
 
         $this->check($arr['file'], $this->mime);
 
-        if ($this->status[0] !== 'fail') {
+        if($this->status[0] !== 'fail') {
 
-            if (array_key_exists('convert', $arr)) {
+            if(array_key_exists('convert', $arr)) {
                 $this->convert($this->status['saved'], $arr['convert']);
             }
 
-            if (array_key_exists('crop', $arr) && is_array($arr['crop'])) {
+            if(array_key_exists('crop', $arr) && is_array($arr['crop'])) {
                 $this->crop($this->status['saved'], $arr['crop']);
             }
 
-            if (array_key_exists('marge', $arr)) {
+            if(array_key_exists('marge', $arr)) {
                 $this->marge($this->status['saved'], $arr['marge'][0], $arr['marge']);
             }
 
-            if (!array_key_exists('name', $arr)) {
+            if(!array_key_exists('name', $arr)) {
                 $arr['name'] = $this->real_name($arr['file']);
             }
 
-            if (!array_key_exists('save', $arr)) {
+            if(!array_key_exists('save', $arr)) {
                 $arr['save'] = dirname($arr['file']);
             }
 
